@@ -11,7 +11,7 @@ from PyQt4 import QtCore, QtGui
 
 import os
 import sys
-root=os.getenv('HOME')+'/ACM'
+root=os.getenv('EXPRESSO_ROOT')
 import h5py
 from qtutils import inthread
 import time
@@ -21,8 +21,7 @@ import numpy as np
 sys.path.append(root+'/tools/liblinear-1.96/python')
 sys.path.append(root+'/tools/libsvm-3.20/python')
 
-import liblinearutil
-import svmutil
+#import svmutil
 from multiprocessing import Process
 import subprocess
 

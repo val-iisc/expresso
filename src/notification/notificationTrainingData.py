@@ -14,9 +14,9 @@ from google.protobuf import text_format
 from time import sleep
 
 import sys
-sys.path.append('/home/jaley/Final/simple')
-import OperationHandler
-import jaleyexp_pb2
+#sys.path.append('/home/jaley/Final/simple')
+#import OperationHandler
+#import jaleyexp_pb2
 
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtGui

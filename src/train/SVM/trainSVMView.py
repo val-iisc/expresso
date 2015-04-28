@@ -10,7 +10,7 @@
 from PyQt4 import QtCore, QtGui
 import os
 import sys
-root=os.getenv('HOME')+'/ACM'
+root=os.getenv('EXPRESSO_ROOT')
 import h5py
 import time
 from time import sleep
@@ -23,8 +23,6 @@ except AttributeError:
 sys.path.append(root+'/tools/liblinear-1.96/python')
 sys.path.append(root+'/tools/libsvm-3.20/python')
 
-import liblinearutil
-import svmutil
 import numpy as np
 # SVM LIBRARY ENDS
 from qtutils import inthread
