@@ -1,0 +1,9 @@
+  name: "default"
+  type: HDF5_DATA
+  top: "data"
+  top: "label"
+  hdf5_data_param {
+    source: "examples/cifar10/test.txt"
+    batch_size: 100
+  }
+  include: { phase: TEST }

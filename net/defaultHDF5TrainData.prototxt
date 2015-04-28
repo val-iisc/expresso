@@ -1,0 +1,12 @@
+  name: "data"
+  type: HDF5_DATA
+  top: "data"
+  top: "label"
+  hdf5_data_param {
+    source: "examples/cifar10/train.txt"
+    batch_size: 100
+  }
+  transform_param {
+    mean_file: "examples/cifar10/mean.binaryproto"
+  }
+  include: { phase: TRAIN }

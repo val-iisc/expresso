@@ -1,0 +1,31 @@
+message FolderParam{
+	required string foldername=1;
+	required string output_loc=2;
+	required string deploy_net_name=3;
+}
+
+message FileParam{
+	repeated string file_loc=1;
+	required string output_loc=2;
+	optional bool is_modified=3[default=false];
+	required string deploy_net_name=4;
+}
+
+message Param {
+	repeated NetParam net=1;
+}
+
+
+message NetParam{
+	required string caffe_root=8;
+	required string name=1;
+	required string protopath=2;
+	required string modelpath=3;
+	optional bool has_mean=4[default=false];
+	optional string meanpath=5;
+	optional bool channel_swap=6;
+	optional uint32 raw_scale=7;
+	optional bool gpu=9[default=false];
+}
+
+
