@@ -48,6 +48,25 @@ class Ui_Form(QtGui.QWidget):
         self.toolButton.setGeometry(QtCore.QRect(380, 70, 23, 25))
         self.toolButton.setObjectName(_fromUtf8("toolButton"))
 
+	self.spinBoxDimX=QtGui.QSpinBox(Form)
+	self.spinBoxDimX.setGeometry(QtCore.QRect(10,111,60,30))
+	self.spinBoxDimX.setMinimum(0)
+	self.spinBoxDimX.setMaximum(10000)
+	self.spinBoxDimX.setValue(227);
+
+	self.spinBoxDimY=QtGui.QSpinBox(Form)
+	self.spinBoxDimY.setGeometry(QtCore.QRect(80,111,60,30))
+	self.spinBoxDimY.setMinimum(0)
+	self.spinBoxDimY.setMaximum(10000)
+	self.spinBoxDimY.setValue(227);
+
+	self.spinBoxDimZ=QtGui.QSpinBox(Form)
+	self.spinBoxDimZ.setGeometry(QtCore.QRect(150,111,60,30))
+	self.spinBoxDimZ.setMinimum(0)
+	self.spinBoxDimY.setMaximum(100000)
+	self.spinBoxDimZ.setValue(3);
+
+
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -68,6 +87,17 @@ class Ui_Form(QtGui.QWidget):
     def cancelSlot(self):
 	self.lineEdit.clear()
 	self.close()
+
+    def showDim(self):
+	self.spinBoxDimX.show()
+	self.spinBoxDimY.show()
+	self.spinBoxDimZ.show()
+
+    def hideDim(self):
+	self.spinBoxDimX.hide()
+	self.spinBoxDimY.hide()
+	self.spinBoxDimZ.hide()
+
 
 if __name__ == "__main__":
     import sys

@@ -44,6 +44,8 @@ except AttributeError:
 
 class Ui_Form(QtGui.QWidget):
     signalCompleteTrigger=QtCore.pyqtSignal(object)
+    signalRefreshTrigger=QtCore.pyqtSignal(object)
+
     def __init__(self,parent=None,index=None):	
         self.index=index
         super(Ui_Form,self).__init__(parent)
@@ -152,6 +154,10 @@ class Ui_Form(QtGui.QWidget):
 
 
     def onSubmitClicked(self):
+        self.netHandle=netConfig_pb2.Param();
+        self.data=open(root+'/net/netData.prototxt').read()
+        text_format.Merge(self.data,self.netHandle)   
+
 	print 'Net is now saving its configuration'
 	ch=None
 	for item in self.netHandle.net:
@@ -255,45 +261,12 @@ class Ui_Form(QtGui.QWidget):
 	    
 
 	#self.lineEdit.text().__str__().lower()+
-
-	"""
-            #1. Has Mean Setting
-            if(cn.has_mean==True):
-                self.checkBoxHasMean.setCheckState(QtCore.Qt.Checked)
-            else:
-                self.checkBoxHasMean.setCheckState(QtCore.Qt.Unchecked)
-                
-            #2.Mean Path Setting
-            if(cn.HasField('meanpath')):
-                self.lineEditMeanPath.setText(cn.meanpath)
-            else:
-                self.lineEditMeanPath.setText('')
-            #3. Raw Scale Setting
-            if(cn.HasField('raw_scale')):
-                self.lineEditRawScale.setText(str(cn.raw_scale))
-            else:
-                self.lineEditRawScale.setText('') 
-            #4. Use GPU
-            if(cn.gpu==True):
-                self.checkBoxUseGPU.setCheckState(QtCore.Qt.Checked)
-            else:
-                self.checkBoxUseGPU.setCheckState(QtCore.Qt.Unchecked)
-            #5. Channel Swap    
-            if(cn.channel_swap==True):
-                self.checkBoxChannelSwap.setCheckState(QtCore.Qt.Checked)
-            else:
-                self.checkBoxChannelSwap.setCheckState(QtCore.Qt.Unchecked)
-            #6. Model Path
-            if(cn.HasField('modelpath')):
-                self.lineEditModelPath.setText(cn.modelpath)
-            else:
-                self.lineEditModelPath.setText('')
-
-	"""
-
 	#Other Ends
 	open(root+'/net/netData.prototxt','w').write(self.netHandle.__str__())
 	self.signalCompleteTrigger.emit(self.lineEdit.text().__str__().upper())
+	self.signalRefreshTrigger.emit("Net("+self.lineEdit.text().__str__().upper()+") is bieng saved")
+
+
 
 
 	

@@ -35,6 +35,7 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_Form(QtGui.QWidget):
+    signalRefreshTrigger=QtCore.pyqtSignal(object)
     def __init__(self,parent=None):
         super(Ui_Form,self).__init__(parent)
 	self.root=root
@@ -95,8 +96,12 @@ class Ui_Form(QtGui.QWidget):
     def removeCurrent(self):
 	del self.netHandler.net[self.listWidget.currentRow()]
 	open(root+'/net/netData.prototxt','w').write(self.netHandler.__str__())
-        print self.netHandler
         self.fillList()
+	self.signalRefreshTrigger.emit()
+
+    def refreshTrigger(self,extra=None):
+	self.fillList()
+
 
 if __name__ == "__main__":
     import sys

@@ -122,37 +122,37 @@ class Ui_Form(QtGui.QWidget):
 
     def setPushButtonIcons(self):
 	icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(root+"/src/train/images/newExperiment.jpg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(root+"/res/exp/extractFeatures.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.pushButton.setIcon(icon)
-        self.pushButton.setIconSize(QtCore.QSize(200,200))
+        self.pushButton.setIconSize(QtCore.QSize(141,141))
 
 	
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(root+"/src/train/images/visuallize.jpg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(root+"/res/exp/visuallize.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.pushButton_2.setIcon(icon1)
-        self.pushButton_2.setIconSize(QtCore.QSize(200,200))
+        self.pushButton_2.setIconSize(QtCore.QSize(141,141))
 
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(_fromUtf8(root+"/src/train/images/visuallize.jpg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(_fromUtf8(root+"/res/exp/accuracy.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.pushButton_3.setIcon(icon2)
-        self.pushButton_3.setIconSize(QtCore.QSize(200,200))
+        self.pushButton_3.setIconSize(QtCore.QSize(141,141))
 
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(_fromUtf8(root+"/src/train/images/visuallize.jpg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap(_fromUtf8(root+"/res/exp/accuracy.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.pushButton_4.setIcon(icon3)
-        self.pushButton_4.setIconSize(QtCore.QSize(200,200))
+        self.pushButton_4.setIconSize(QtCore.QSize(141,141))
 
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(_fromUtf8(root+"/src/train/images/visuallize.jpg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon4.addPixmap(QtGui.QPixmap(_fromUtf8(root+"/res/exp/accuracy.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.pushButton_5.setIcon(icon4)
-        self.pushButton_5.setIconSize(QtCore.QSize(200,200))
+        self.pushButton_5.setIconSize(QtCore.QSize(141,141))
 
 
     def clickSlot(self):
 	icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap(_fromUtf8(root+"/src/train/images/visuallize.jpg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.pushButton.setIcon(icon1)
-        self.pushButton.setIconSize(QtCore.QSize(200,200))
+        self.pushButton.setIconSize(QtCore.QSize(141,141))
 
 
 

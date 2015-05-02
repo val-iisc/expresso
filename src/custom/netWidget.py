@@ -458,7 +458,7 @@ class MyForm(QtGui.QWidget):
 	    self.protohandler.input_dim[2]=int(self.treeWidget.currentItem().text(4))
 	    self.protohandler.input_dim[3]=int(self.treeWidget.currentItem().text(5))
 	    self.textEdit.setText(self.protohandler.__str__())
-	    self.loadTreeWidget(dim)
+	    self.loadTreeWidget()
 
 	else:
 	    dim=[self.treeWidget.currentItem().text(2),\

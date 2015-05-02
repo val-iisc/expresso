@@ -29,12 +29,16 @@ for idx in range(len(env_dict)//2):
 
 root=str(os.getenv('EXPRESSO_ROOT'))
 print root,'ROOT'
+import deleteView
+
+
 
 sys.path.append(root+'/src/default')
 sys.path.append(root+'/src/data')
 sys.path.append(root+'/src/net')
 sys.path.append(root+'/src/exp')
 sys.path.append(root+'/src/train')
+
 #Default Imports
 import centralDefault
 import bottomDefault
@@ -131,12 +135,20 @@ class Ui_MainWindow(QtGui.QMainWindow):
 	self.pushButtonNotification.setStyleSheet("background-color:rgba(255,255,255,0)")
 	self.pushButtonNotification.setFocusPolicy(QtCore.Qt.NoFocus)
 
+	#Settings
         self.pushButtonSettings = QtGui.QPushButton(self.centralwidget)
         self.pushButtonSettings.setGeometry(QtCore.QRect(940, 39, 30, 30))
         self.pushButtonSettings.setObjectName(_fromUtf8("pushButtonDataDefault"))
 	self.pushButtonSettings.setStyleSheet("background-color:rgba(255,255,255,0)")
 	self.pushButtonSettings.setFocusPolicy(QtCore.Qt.NoFocus)
 
+
+	#Delete
+        self.pushButtonDelete = QtGui.QPushButton(self.centralwidget)
+        self.pushButtonDelete.setGeometry(QtCore.QRect(900, 39, 30, 30))
+        self.pushButtonDelete.setObjectName(_fromUtf8("pushButtonDataDefault"))
+	self.pushButtonDelete.setStyleSheet("background-color:rgba(255,255,255,0)")
+	self.pushButtonDelete.setFocusPolicy(QtCore.Qt.NoFocus)
 
 
 	self.labelNotification=QtGui.QLabel(self.centralwidget)
@@ -236,6 +248,9 @@ class Ui_MainWindow(QtGui.QMainWindow):
 
 	#Settings Related
 	self.initiallizeSettings()
+	#Delete Related
+	self.initiallizeGroupDelete()
+
         self.retranslateUi(MainWindow)
 	self.onMainView()
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -492,6 +507,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
 	self.pageLeft2Exp.page1Widget.refreshTrigger()
 	self.pageCentralTrain.pageSVMWidget.refreshTrigger()
 	self.pageCentralTrain.page3Widget.widget.refreshTrigger()
+	self.pageLeft2Train.page1Widget.refreshTrigger()
 
 	#Refreshing Net Flows	
 
@@ -506,6 +522,9 @@ class Ui_MainWindow(QtGui.QMainWindow):
 	self.pageLeft2Exp.page1Widget.signalRefreshTrigger.connect(self.refreshAllScreens)
 	#self.pageLeft2Exp.page1Widget.signalRefreshTrigger.connect(self.refreshAllScreens)
 
+	#Net Triggers
+	self.pageCentralNet.page0Widget.signalRefreshTrigger.connect(self.refreshAllScreens)
+	self.pageLeft2Net.widget.signalRefreshTrigger.connect(self.refreshAllScreens)
 
 
     def addNotificationTriggers(self):
@@ -523,6 +542,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
     def addNetTriggers(self):
 	self.pageLeft2Net.widget.listWidget.currentRowChanged.connect(self.pageCentralNet.page0Widget.onIndexChanged)
 	self.pageLeft2Net.widget.signalNewConfigTrigger.connect(self.pageCentralNet.page0Widget.onNewConfigClickedSlot)
+	###Inspect the bellow Trigger
 	self.pageCentralNet.page0Widget.signalCompleteTrigger.connect(self.pageLeft2Net.widget.updateList)
 
 
@@ -637,12 +657,33 @@ class Ui_MainWindow(QtGui.QMainWindow):
 	#self.settingsWidget.show()
 	self.pushButtonSettings.clicked.connect(self.onSettingsClicked)
 
+
+    def initiallizeGroupDelete(self):
+	self.iconDelete=QtGui.QIcon()
+	self.iconDelete.addPixmap(QtGui.QPixmap(_fromUtf8(root+'/res/main/delete/delete.png')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+	self.pushButtonDelete.setIcon(self.iconDelete)
+	self.pushButtonDelete.setIconSize(QtCore.QSize(30,30))
+	#self.settingsWidget.show()
+	self.pushButtonDelete.clicked.connect(self.onDeleteClicked)
+
+
+    
+
     def onSettingsClicked(self):
 	
 	self.settingsWidget=settingsView.Ui_Form()
 	self.settingsWidget.setStyleSheet("background-color:rgb(255,255,255)")
 	self.settingsWidget.setGeometry(QtCore.QRect(620,75,414,275))
 	self.settingsWidget.show()
+
+
+    def onDeleteClicked(self):
+	
+	self.deleteWidget=deleteView.Ui_Form()
+	self.deleteWidget.setStyleSheet("background-color:rgb(255,255,255)")
+	self.deleteWidget.setGeometry(QtCore.QRect(620,75,414,275))
+	self.deleteWidget.signalRefreshTrigger.connect(self.refreshAllScreens)
+	self.deleteWidget.show()
 
 
 

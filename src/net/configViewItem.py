@@ -174,7 +174,7 @@ class Ui_Form(QtGui.QWidget):
 	self.label.setText(QtGui.QFileDialog.getOpenFileName(self,self.tr("Open File"),prevtext))
 	self.subWidget.textEdit.setText(open(self.label.text().__str__()).read())
 	self.subWidget.loadTreeWidget()
-	selfexpandSlot()
+	self.expandSlot()
 		
     def onNewNetClickedSlot(self):#Load/Modify Existing Configuration
         self.index=None;

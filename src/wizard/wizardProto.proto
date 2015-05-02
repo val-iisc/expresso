@@ -1,0 +1,20 @@
+package wizardFlow;
+
+message Param{
+	repeated FlowParam flow=1;
+}
+
+message FlowParam{
+	required string heading1=1;
+	repeated SubFlowParam subflow=2;
+}
+
+message SubFlowParam{
+	required string heading2=1;
+	repeated TextParam textiter=2;
+}
+message TextParam{
+	required string heading3=1;
+	required string text=2;
+	required string imgloc=3;
+}

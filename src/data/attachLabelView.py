@@ -8,6 +8,9 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
+import LabelHandler
+import os
+root=os.getenv('EXPRESSO_ROOT')
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -63,6 +66,25 @@ class Ui_Form(QtGui.QWidget):
         self.pushButton_4.setText(_translate("Form", "Cancel", None))
         self.pushButton_3.setText(_translate("Form", "Ok", None))
         self.toolButton.setText(_translate("Form", "...", None))
+	self.pushButton_3.clicked.connect(self.submit)
+	self.pushButton_4.clicked.connect(self.reject)
+	self.lineEdit.setReadOnly(True)
+	self.toolButton.clicked.connect(self.setFileNameSlot)
+
+    def setFileNameSlot(self):
+	self.lineEdit.setText(QtGui.QFileDialog.getOpenFileName(self,'Open File',root))
+
+    def submit(self):
+	if(self.dataName==None):return
+	self.attachLabel()
+	self.close()
+    def reject(self):
+	self.close()
+
+    def attachLabel(self):
+	if(self.lineEdit.text().__str__()==''):return
+	LabelHandler.text2hdf5(self.lineEdit.text().__str__(),root+'/data/'+self.dataName+'.hdf5')
+
 
 
 if __name__ == "__main__":

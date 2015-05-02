@@ -26,6 +26,7 @@ from qtutils import inmain_later,inthread,inmain
 from multiprocessing import Process
 from signal import SIGTERM
 import time
+import importMultipleFoldersView
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
@@ -137,6 +138,10 @@ class Ui_Form(QtGui.QWidget):
         self.addNewWidget.installEventFilter(self)
 
 	#Event filters end
+	#------Other Modalities
+	self.addMagicFolderButton(Form)
+	self.pushButtonMagicFolder.clicked.connect(self.magicFolderSlot)
+	#------Other Modalities End
 
     def testing(self):
 	print 'Hello'
@@ -156,6 +161,9 @@ class Ui_Form(QtGui.QWidget):
 
 	    self.lineEditData.setText(self.addNewWidget.lineEdit.text().__str__())
 	    print self.addNewWidget.lineEdit.text().__str__() 
+	    self.dimx=self.addNewWidget.spinBoxDimX.value()
+	    self.dimy=self.addNewWidget.spinBoxDimY.value()
+	    self.dimz=self.addNewWidget.spinBoxDimZ.value()
 	    self.pushButtonOkClicked()
 	    
 
@@ -168,9 +176,10 @@ class Ui_Form(QtGui.QWidget):
 
 	if self.isFolder==True:
             self.lineEditFolderData.setText(self.dialogHandle.getExistingDirectory(self,self.tr("Open File"),str(self.prevPath)))    
-            self.widget.setStyleSheet(_fromUtf8("background-color:rgb(255, 255, 0)"))	
+            #self.widget.setStyleSheet(_fromUtf8("background-color:rgb(255, 255, 0)"))	
 	#After Selection Starts
-	
+	self.addNewWidget.hideDim()
+	if(self.comboBox.currentText()=='Folder' or self.comboBox.currentText()=='Text'):self.addNewWidget.showDim()
 	self.addNewWidget.show()
 	
 	#After Selection Ends
@@ -187,7 +196,7 @@ class Ui_Form(QtGui.QWidget):
                 QtGui.QMessageBox.about(self,'File Not Found',self.lineEditFolderData.text() +'\n Does not Exist')
                 return
 	    triggerList=self.createTriggerList()
-	    inthread(self.runParallel,DataHandler.text2HDF5,str(self.lineEditData.text()), self.lineEditFolderData.text(),self.root+'/data',True,triggerList)#Parallel ThreadExecution
+	    inthread(self.runParallel,DataHandler.text2HDF5,str(self.lineEditData.text()), self.lineEditFolderData.text(),self.root+'/data',False,self.dimx,self.dimy,self.dimz,triggerList)#Parallel ThreadExecution
 
             return
         #Jaley End
@@ -198,7 +207,7 @@ class Ui_Form(QtGui.QWidget):
                 return
 	    
 	    triggerList=self.createTriggerList()
-	    inthread(self.runParallel,DataHandler.mat2HDF5,str(self.lineEditData.text()), self.lineEditFolderData.text(),self.root+'/data',True,triggerList)#Parallel ThreadExecution
+	    inthread(self.runParallel,DataHandler.mat2HDF5,str(self.lineEditData.text()), self.lineEditFolderData.text(),self.root+'/data',True,None,None,None,triggerList)#Parallel ThreadExecution
 	    #os.kill(p.pid(),SIGTERM)
             return
 
@@ -209,7 +218,7 @@ class Ui_Form(QtGui.QWidget):
                 return
 
 	    triggerList=self.createTriggerList()
-	    inthread(self.runParallel,DataHandler.leveldb2HDF5,str(self.lineEditData.text()), self.lineEditFolderData.text(),self.root+'/data',True,triggerList)#Parallel ThreadExecution
+	    inthread(self.runParallel,DataHandler.leveldb2HDF5,str(self.lineEditData.text()), self.lineEditFolderData.text(),self.root+'/data',True,self.dimx,self.dimy,self.dimz,triggerList)#Parallel ThreadExecution
 
 
 
@@ -219,11 +228,14 @@ class Ui_Form(QtGui.QWidget):
                 return
 
 	    triggerList=self.createTriggerList()
-	    inthread(self.runParallel,DataHandler.folder2HDF5,str(self.lineEditData.text()), self.lineEditFolderData.text().__str__(),self.root+'/data',True,triggerList)#Parallel ThreadExecution	    
+	    inthread(self.runParallel,DataHandler.folder2HDF5,str(self.lineEditData.text()), self.lineEditFolderData.text().__str__(),self.root+'/data',True,self.dimx,self.dimy,self.dimz,triggerList)#Parallel ThreadExecution	    
+
 
 	    return
-		
-    
+
+			
+
+ 
     def runprogress(self):
 	print self.progressBar.value()
 	print str(self.progressBar.text())
@@ -258,9 +270,9 @@ class Ui_Form(QtGui.QWidget):
 	self.signalCompleteTrigger.emit(triggerList)
 	self.signalRefreshTrigger.emit(triggerList[4])
 
-    def runParallel(self,target,saveName,importLoc,saveLoc,hasLabel,triggerList):
+    def runParallel(self,target,saveName,importLoc,saveLoc,hasLabel,dimx,dimy,dimz,triggerList):
 		
-        p=Process(target=target,args=(saveName,importLoc,saveLoc,hasLabel))
+        p=Process(target=target,args=(saveName,importLoc,saveLoc,hasLabel,dimx,dimy,dimz))
 	inthread(self.sidethread,p,triggerList)	
 	p.start()
 	p.join()
@@ -279,36 +291,29 @@ class Ui_Form(QtGui.QWidget):
 
 	    print 'is alive'
 	    sleep(0.5)
-    """
-    def getAccuracyAndPrecision(self,p):
-	import socket
-	hostname=str(socket.gethostname())
-	import getpass
-	username=str(getpass.getuser())
-	foldername='/tmp'
- 	locationprefix=foldername+'/'+hostname+'.'+username+'.log.INFO.'
-	processid=str(p.pid)
 
-	filename=''
-	print '#############'
-	print 'PID', processid
-	print 'prefix',locationprefix
-	print '#############'
+#----------------Rest ----------------------------
+    #Magic Tool
+    def addMagicFolderButton(self,Form):
+	self.pushButtonMagicFolder=QtGui.QPushButton(Form)
+	self.pushButtonMagicFolder.setGeometry(QtCore.QRect(50,50,50,50))
+	self.pushButtonMagicFolder.setText('Magic')
+	self.addMagicFolderWidget=importMultipleFoldersView.Ui_Form()
+	self.addMagicFolderWidget.setGeometry(QtCore.QRect(100,100,507,300))
 
-	for files in os.listdir(foldername):
-	    if files.startwith(locationprefix) and files.endwith(processid):
-		print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-	        print files
-		print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-		filename=files
-		break;
+	pass
+    def magicFolderSlot(self):
+	self.addMagicFolderWidget.show()
+	pass
+
+    def runMagicFolderParallel(self):
+	pass
+
+    #User Defined Croping Function for Text,Magic Folder,Folder Flow
+
+
 	
-	if(filename!=''):
-	    lines=open(foldername+'/'+filename,'r').readlines()
-	    print lines[-3:-1]
-	    return ' '.join(lines[-3:-1])
-	return ''
-        """
+
 
 if __name__ == "__main__":
     import sys

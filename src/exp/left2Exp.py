@@ -58,8 +58,9 @@ class Ui_Form(QtGui.QWidget):
         Form.setWindowTitle(_translate("Form", "Form", None))
 
     def addPages(self):
-        self.addPage0()
+        #self.addPage0()
         self.addPage1()
+	self.addPage1copy()
         self.addPage3()
         self.addPage0()
         self.currentIndex=0
@@ -70,6 +71,9 @@ class Ui_Form(QtGui.QWidget):
         self.stackedWidget.addWidget(self.containerWidget)
 
 
+    def addPage1copy(self):
+        self.stackedWidget.addWidget(self.page1Container)
+	
     def addPage1(self):
         self.page1Container=QtGui.QWidget(self)
         self.page1Container.setGeometry(0,0,291,301)
@@ -87,8 +91,8 @@ class Ui_Form(QtGui.QWidget):
         self.page3Container=QtGui.QWidget(self)
         self.page3Container.setGeometry(0,0,291,301)
         self.page3Container.setStyleSheet('background-color:rgb(150,150,90);')
-        self.page3Widget=pipelineView.Ui_Form(self.page3Container)
-        self.page3Widget.setGeometry(0,0,291,301)
+        #self.page3Widget=pipelineView.Ui_Form(self.page3Container) ### Uncomment It Later
+        #self.page3Widget.setGeometry(0,0,291,301)
         #self.page1Container.setWidget(self.page1Widget)
         self.stackedWidget.addWidget(self.page3Container)
 

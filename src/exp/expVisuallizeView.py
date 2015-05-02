@@ -209,7 +209,7 @@ class Ui_Form(QtGui.QWidget):
 	#Pooling Ends
         print data.min()
         data -= data.min()
-        data /= data.max()
+        if(data.max()!=0):data /= data.max()
 
         # force the number of filters to be square
         n = int(np.ceil(np.sqrt(data.shape[0])))

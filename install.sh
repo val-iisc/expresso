@@ -1,5 +1,5 @@
-CAFFE_ROOT=/home/babu/caffe
-EXPRESSO_ROOT=/home/babu/expresso
+CAFFE_ROOT=/home/jaley/caffe
+EXPRESSO_ROOT=/home/jaley/Projects/expresso
 HTTP_PROXY=http://proxy.serc.iisc.in:3128
 
 sudo apt-get install python-qt4

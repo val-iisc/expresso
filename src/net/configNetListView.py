@@ -18,7 +18,7 @@ sys.path.append(root+'/src/net/config')
 import netConfig_pb2
 from google.protobuf import text_format
 import shutil
-
+import propertiesView
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -35,8 +35,8 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_Form(QtGui.QWidget):
-    
     signalNewConfigTrigger=QtCore.pyqtSignal()
+    signalRefreshTrigger=QtCore.pyqtSignal()
     def __init__(self,parent=None):
         super(Ui_Form,self).__init__(parent)
 	self.root=root
@@ -90,6 +90,8 @@ class Ui_Form(QtGui.QWidget):
         menu =QtGui.QMenu()
 	menu.addAction(self.tr("CreateNew"),self.createNewSlot)
         menu.addAction(self.tr("Remove"),self.removeCurrentSlot)
+        menu.addAction(self.tr("Properties"),self.propertiesSlot)
+
         menu.exec_(self.listWidget.viewport().mapToGlobal(position))
 
 
@@ -99,6 +101,7 @@ class Ui_Form(QtGui.QWidget):
 	if(self.listWidget.currentItem().text()!=''):shutil.rmtree(root+'/net/data/'+self.listWidget.currentItem().text().__str__().lower())
         print self.netHandler
         self.fillList()
+	self.signalRefreshTrigger.emit()
 
     def createNewSlot(self):
 	print "Create New is starting"
@@ -113,11 +116,16 @@ class Ui_Form(QtGui.QWidget):
 		return
 	self.listWidget.setCurrentRow(0)
 
+
     def refreshTrigger(self):
 	self.fillList()
+	
  
-
-
+    def propertiesSlot(self):
+	netName=self.listWidget.currentItem().text().__str__()
+	self.propertiesWidget=propertiesView.Ui_Form(netName=netName)
+	self.propertiesWidget.setGeometry(QtCore.QRect(100,100,531,446))
+	self.propertiesWidget.show()
 
 if __name__ == "__main__":
     import sys

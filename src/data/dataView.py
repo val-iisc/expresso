@@ -28,6 +28,7 @@ import transformationView
 import splitView
 import attachLabelView
 import exportView
+
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
     def _translate(context, text, disambig):
@@ -173,6 +174,7 @@ class Ui_Form(QtGui.QWidget):
                 print files
                 j=self.tableWidgetData.rowCount();
                 f=h5py.File(self.root+'/data/'+files,'r')
+		if('data' not in f.keys()):continue
                 shape= f['data'].shape
                 self.tableWidgetData.insertRow(self.tableWidgetData.rowCount());
                 self.tableWidgetData.setItem(j,0,QtGui.QTableWidgetItem(files.split('.')[0] ));
@@ -240,8 +242,9 @@ class Ui_Form(QtGui.QWidget):
 	print 'Randomize Slot'
 
     def attachLabelSlot(self):
+	name=str(self.tableWidgetData.currentItem().text())
 	print 'Attach Slot'
-	self.attachLabelWidget=attachLabelView.Ui_Form()
+	self.attachLabelWidget=attachLabelView.Ui_Form(dataName=name)
 	self.attachLabelWidget.setGeometry(self.cursor().pos().x(),self.cursor().pos().y(),421,183)
 	self.attachLabelWidget.show()
 

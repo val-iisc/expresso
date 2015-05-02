@@ -92,6 +92,7 @@ class NetHandler:
         self.fileHandle=h5py.File(root+'/exp/data/'+self.saveName+'.hdf5','w')
 
 	savename=root+'/net/temp/temp_'+self.netName+'_'+self.dataName+'_'+self.saveName+'_'+str(self.batchSize)+'.prototxt'
+	print savename,'SAVENAME+++++++++++++++++++++++++++++++++++++'
 	if(os.path.exists(savename)):return False
         for elem in self.netList:
             self.tempHandler=self.protoHandler.__deepcopy__()
@@ -100,11 +101,12 @@ class NetHandler:
             open(savename,'w').write(self.tempHandler.__str__())
             #Change Net everytime
             channel_swap=(2,1,0) if self.currentNet.channel_swap else None
+	    
+	    if(self.currentNet.HasField('meanpath') and self.currentNet.meanpath!=''):
+                self.net=caffe.Classifier(str(savename),str(self.currentNet.modelpath),gpu=False,mean=np.load(str(self.currentNet.meanpath)),raw_scale=int(self.currentNet.raw_scale),channel_swap=channel_swap)
+	    else:
+	        self.net=caffe.Classifier(str(savename),str(self.currentNet.modelpath),gpu=False,raw_scale=int(self.currentNet.raw_scale),channel_swap=channel_swap)
 
-	    print savename,'SAVENAME'
-	    #self.net=caffe.Classifier(str(savename),str(self.currentNet.modelpath),gpu=False,raw_scale=int(self.currentNet.raw_scale),channel_swap=channel_swap)
- 
-            self.net=caffe.Classifier(str(savename),str(self.currentNet.modelpath),gpu=False,mean=np.load(str(self.currentNet.meanpath)),raw_scale=int(self.currentNet.raw_scale),channel_swap=channel_swap)
 
             data=self.operate()
             #Creating and storing in HDF5 file

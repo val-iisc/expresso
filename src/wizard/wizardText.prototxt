@@ -1,0 +1,36 @@
+flow{
+	heading1:"Import View"
+	subflow{
+		heading2:"default"
+		textiter{
+			heading3:"Step 1: Initiallize Data"
+			text:"In this flow, we will learn how to import data"
+			imgloc:"$EXPRESSO_ROOT/res/wizard/importViewDefault.png"
+		}
+		textiter{
+			heading3:"Step 2: Initiallize Data"
+			text:"In this flow, we will learn how to import data"
+			imgloc:"$EXPRESSO_ROOT/res/wizard/importViewTextStep1.png"
+		}
+		textiter{
+			heading3:"Step 3: Finallize Data"
+			text:"In this flow, we will learn how to import data"
+			imgloc:"$EXPRESSO_ROOT/res/wizard/importViewTextStep2.png"
+		}
+		
+		textiter{
+			heading3:"Step 3: Finallize Data"
+			text:"In this flow, we will learn how to import data"
+			imgloc:"$EXPRESSO_ROOT/res/wizard/importViewTextStep2.png"
+		}
+	}
+	subflow{
+		heading2:"Importing HDF5 Data"
+		textiter{
+			heading3:"Step 3: Finallize Data"
+			text:"In this flow, we will learn how to import data"
+			imgloc:"$EXPRESSO_ROOT/res/wizard/importViewTextStep2.png"
+
+		}
+	}
+}

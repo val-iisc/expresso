@@ -63,6 +63,13 @@ class Ui_Form(QtGui.QWidget):
         self.toolButton = QtGui.QToolButton(Form)
         self.toolButton.setGeometry(QtCore.QRect(340, 76, 61, 25))
         self.toolButton.setStyleSheet(_fromUtf8("background-color:rgba(255,255,255,150)"))
+        self.toolButton.setText(_translate("Form", "back", None))
+	#Push Button to kill the process
+	self.pushButtonStopTraining=QtGui.QPushButton(Form)
+	self.pushButtonStopTraining.setGeometry(QtCore.QRect(310,76,25,25))
+	self.pushButtonStopTraining.setText('X')	
+	#Push Button to kill process ends
+
 	#self.addValueSlot(0)
 	self.plotLossArray()
 	self.retranslateUi(Form)
@@ -81,7 +88,6 @@ class Ui_Form(QtGui.QWidget):
         line=np.sin(np.arange(255))
         plothandle=self.plotwidget.plot(np.array(range(len(line)))*10,line, clear=True)
 	self.plotwidget.setXRange(0+value,100+value)
-        self.toolButton.setText(_translate("Form", "back", None))
 
 
     def plotLossArray(self):
@@ -108,7 +114,8 @@ class Ui_Form(QtGui.QWidget):
 	print lossList
 	print '^^^^^^^^^^^^^^^^^^^^^'
 
-
+    def stopTraining(self):
+	print 
 
 
 if __name__ == "__main__":
