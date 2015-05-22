@@ -1,4 +1,7 @@
-HTTP_PROXY=
+sudo apt-get install python-protobuf
+sudo apt-get install python-numpy
+sudo apt-get install python-scipy
+sudo apt-get install python-h5py 
 
 sudo apt-get install python-qt4
 sudo apt-get install pyqt4-dev-tools

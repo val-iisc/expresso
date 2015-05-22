@@ -6,15 +6,13 @@ If Caffe has been installed, add the following environmental variables to your .
 
 `CAFFE_ROOT` : Location of Caffe''s root directory (E.g. `/home/username/caffe`)
 `EXPRESSO_ROOT` : Full path location of Expresso''s root directory (E.g. `/home/username/Projects/expresso`)
-
-and on the command line,type
-    source .bashrc
-
-Open the file install.sh situated in the same directory as this document and update the following:
 `HTTP_PROXY` : If you need/use a HTTP proxy, enter the proxy string here (without quotes)
 
 To begin installation, type the following on command line:
     sh install.sh
+
+Then, type the following on the command line:
+    source ~/.bashrc
 
 If your installation is succesful, typing
     sh run_expresso.sh
