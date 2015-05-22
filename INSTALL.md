@@ -1,6 +1,6 @@
 # Installation
 
-The instructions below assume that Caffe has already been installed. If not, please refer to installation instructions at [](http://val.serc.iisc.ernet.in/expresso/installation.html) 
+The instructions below assume that Caffe has already been installed. If not, please refer to installation instructions at [this link](http://val.serc.iisc.ernet.in/expresso/installation.html) 
 
 If Caffe has been installed, add the following environmental variables to your .bashrc (or whatever shell you happen to be using)
 
