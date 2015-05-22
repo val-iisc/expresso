@@ -31,10 +31,17 @@ class NotificationHandler:
 	if(found==True or (found==False and l[3]==0)):	
 	    if(found==False): l.append(False) #Default the current state
 	    self.notificationList.append(l)
-	    self.updateNotificationList()
+	self.updateNotificationList()
 
     def updateNotificationList(self):
-	pass
+	self.newList=[]
+	for elem in self.notificationList:
+	    if(elem[3]!=1):self.newList.append(elem)
+	for elem in self.notificationList:
+	    if(elem[3]==1):self.newList.append(elem)
+	self.notificationList=self.newList
+
+
 
 
     def changeWidgetState(self,packet):

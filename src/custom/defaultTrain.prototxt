@@ -1,25 +1,26 @@
-layers{
+layer{
   name: "default"
-  type: HDF5_DATA
+  type: "HDF5Data"
   top: "data"
   top: "label"
   hdf5_data_param {
-    source: "examples/cifar10/train.txt"
+    source: "train.txt"
     batch_size: 100
   }
   transform_param {
-    mean_file: "examples/cifar10/mean.binaryproto"
   }
   include: { phase: TRAIN }
 }
-layers{
+layer{
   name: "default"
-  type: HDF5_DATA
+  type: "HDF5Data"
   top: "data"
   top: "label"
   hdf5_data_param {
-    source: "examples/cifar10/test.txt"
+    source: "test.txt"
     batch_size: 100
+  }
+  transform_param {
   }
   include: { phase: TEST }
 }

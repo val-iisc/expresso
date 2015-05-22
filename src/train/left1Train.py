@@ -17,6 +17,9 @@ except AttributeError:
 import sys
 import os
 root=os.getenv('EXPRESSO_ROOT')
+sys.path.append(root+'/wizard')
+import wizardView
+
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
     def _translate(context, text, disambig):
@@ -34,9 +37,12 @@ class Ui_Form(QtGui.QWidget):
     def setupUi(self, Form):
         Form.setObjectName(_fromUtf8("Form"))
         Form.resize(291, 351)
-        self.stackedWidget = QtGui.QStackedWidget(Form)
-        self.stackedWidget.setGeometry(QtCore.QRect(0, 0, 291, 321))
-	self.addPages()#Add Pages
+
+        self.widget =wizardView.Ui_Form(Form,flowName='Train View')
+        self.widget.setGeometry(QtCore.QRect(0, 0, 291, 351))
+        self.widget.setStyleSheet('background-color:rgba(255,255,225,0);border:0px;')
+ 
+        self.widget.setGeometry(QtCore.QRect(0, 0, 291, 351))
 	self.addWidgets() #Add the necessary Widgets
 	self.pushButtonNext.hide()
 	self.pushButtonBack.hide()
@@ -45,61 +51,6 @@ class Ui_Form(QtGui.QWidget):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(_translate("Form", "Form", None))
-    def addPages(self):
-	self.addPage0()
-	self.addPage1()
-	self.addPage2()
-	self.addPage3()
-	self.addPage4()
-	self.addPage5()
-	self.currentIndex=0
-    def addPage0(self):
-	self.label0=QtGui.QLabel(self)
-        self.pixmap0=QtGui.QPixmap(root+'/res/train/steps/step0Train.jpg')
-        self.label0.setPixmap(self.pixmap0.scaled(291,321,QtCore.Qt.IgnoreAspectRatio,QtCore.Qt.FastTransformation))
-
-	#self.Page0TextEdit=QtGui.QTextEdit(self)
-	self.stackedWidget.addWidget(self.label0)
-
-    def addPage1(self):
-	self.label1=QtGui.QLabel(self)
-        self.pixmap1=QtGui.QPixmap(root+'/res/train/steps/step1Train.jpg')
-        self.label1.setPixmap(self.pixmap1.scaled(291,321,QtCore.Qt.IgnoreAspectRatio,QtCore.Qt.FastTransformation))
-
-	#self.Page0TextEdit=QtGui.QTextEdit(self)
-	self.stackedWidget.addWidget(self.label1)
-
-    def addPage2(self):
-	self.label2=QtGui.QLabel(self)
-        self.pixmap2=QtGui.QPixmap(root+'/res/train/steps/step2Train.jpg')
-        self.label2.setPixmap(self.pixmap2.scaled(291,321,QtCore.Qt.IgnoreAspectRatio,QtCore.Qt.FastTransformation))
-
-	#self.Page0TextEdit=QtGui.QTextEdit(self)
-	self.stackedWidget.addWidget(self.label2)
-
-
-    def addPage3(self):
-	self.label3=QtGui.QLabel(self)
-        self.pixmap3=QtGui.QPixmap(root+'/res/train/steps/step3Train.jpg')
-        self.label3.setPixmap(self.pixmap3.scaled(291,321,QtCore.Qt.IgnoreAspectRatio,QtCore.Qt.FastTransformation))
-
-	#self.Page0TextEdit=QtGui.QTextEdit(self)
-	self.stackedWidget.addWidget(self.label3)
-
-
-    def addPage4(self):
-	self.label4=QtGui.QLabel(self)
-        self.pixmap4=QtGui.QPixmap(root+'/res/train/steps/step4Train.jpg')
-        self.label4.setPixmap(self.pixmap4.scaled(291,321,QtCore.Qt.IgnoreAspectRatio,QtCore.Qt.FastTransformation))
-
-	#self.Page0TextEdit=QtGui.QTextEdit(self)
-	self.stackedWidget.addWidget(self.label4)
-
-    def addPage5(self):
-        self.containerWidget=QtGui.QScrollArea(self)
-        self.stackedWidget.addWidget(self.containerWidget)
-
-
 
 
     #Add the necessary Widgets

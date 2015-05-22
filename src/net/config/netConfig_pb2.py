@@ -13,7 +13,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='netConfig.proto',
   package='jaleynet',
-  serialized_pb='\n\x0fnetConfig.proto\x12\x08jaleynet\"(\n\x05Param\x12\x1f\n\x03net\x18\x01 \x03(\x0b\x32\x12.jaleynet.NetParam\"\xe1\x01\n\x08NetParam\x12\x12\n\ncaffe_root\x18\x08 \x02(\t\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x11\n\tprotopath\x18\x02 \x02(\t\x12\x11\n\ttrainpath\x18\n \x02(\t\x12\x12\n\nsolverpath\x18\x0b \x02(\t\x12\x11\n\tmodelpath\x18\x03 \x02(\t\x12\x17\n\x08has_mean\x18\x04 \x01(\x08:\x05\x66\x61lse\x12\x10\n\x08meanpath\x18\x05 \x01(\t\x12\x14\n\x0c\x63hannel_swap\x18\x06 \x01(\x08\x12\x11\n\traw_scale\x18\x07 \x01(\r\x12\x12\n\x03gpu\x18\t \x01(\x08:\x05\x66\x61lse')
+  serialized_pb='\n\x0fnetConfig.proto\x12\x08jaleynet\"(\n\x05Param\x12\x1f\n\x03net\x18\x01 \x03(\x0b\x32\x12.jaleynet.NetParam\"\xd0\x02\n\x08NetParam\x12\x12\n\ncaffe_root\x18\x08 \x02(\t\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x11\n\tprotopath\x18\x02 \x02(\t\x12\x11\n\ttrainpath\x18\n \x02(\t\x12\x12\n\nsolverpath\x18\x0b \x02(\t\x12\x11\n\tmodelpath\x18\x03 \x02(\t\x12\x17\n\x08has_mean\x18\x04 \x01(\x08:\x05\x66\x61lse\x12\x10\n\x08meanpath\x18\x05 \x01(\t\x12\x1a\n\x0c\x63hannel_swap\x18\x06 \x01(\x08:\x04true\x12\x16\n\traw_scale\x18\x07 \x01(\r:\x03\x32\x35\x35\x12\x12\n\x03gpu\x18\t \x01(\x08:\x05\x66\x61lse\x12\x14\n\tgpu_index\x18\x0c \x01(\r:\x01\x30\x12\x12\n\x05tdim0\x18\r \x01(\r:\x03\x31\x30\x30\x12\x10\n\x05tdim1\x18\x0e \x01(\r:\x01\x33\x12\x12\n\x05tdim2\x18\x0f \x01(\r:\x03\x32\x32\x37\x12\x12\n\x05tdim3\x18\x10 \x01(\r:\x03\x32\x32\x37')
 
 
 
@@ -112,14 +112,14 @@ _NETPARAM = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='channel_swap', full_name='jaleynet.NetParam.channel_swap', index=8,
       number=6, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
+      has_default_value=True, default_value=True,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='raw_scale', full_name='jaleynet.NetParam.raw_scale', index=9,
       number=7, type=13, cpp_type=3, label=1,
-      has_default_value=False, default_value=0,
+      has_default_value=True, default_value=255,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -127,6 +127,41 @@ _NETPARAM = _descriptor.Descriptor(
       name='gpu', full_name='jaleynet.NetParam.gpu', index=10,
       number=9, type=8, cpp_type=7, label=1,
       has_default_value=True, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='gpu_index', full_name='jaleynet.NetParam.gpu_index', index=11,
+      number=12, type=13, cpp_type=3, label=1,
+      has_default_value=True, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='tdim0', full_name='jaleynet.NetParam.tdim0', index=12,
+      number=13, type=13, cpp_type=3, label=1,
+      has_default_value=True, default_value=100,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='tdim1', full_name='jaleynet.NetParam.tdim1', index=13,
+      number=14, type=13, cpp_type=3, label=1,
+      has_default_value=True, default_value=3,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='tdim2', full_name='jaleynet.NetParam.tdim2', index=14,
+      number=15, type=13, cpp_type=3, label=1,
+      has_default_value=True, default_value=227,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='tdim3', full_name='jaleynet.NetParam.tdim3', index=15,
+      number=16, type=13, cpp_type=3, label=1,
+      has_default_value=True, default_value=227,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -140,7 +175,7 @@ _NETPARAM = _descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=72,
-  serialized_end=297,
+  serialized_end=408,
 )
 
 _PARAM.fields_by_name['net'].message_type = _NETPARAM

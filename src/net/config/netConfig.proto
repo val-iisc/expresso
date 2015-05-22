@@ -15,7 +15,12 @@ message NetParam{
 	optional bool has_mean=4[default=false];
 	optional string meanpath=5;
 	optional bool channel_swap=6[default=true];
-	optional uint32 raw_scale=7;
+	optional uint32 raw_scale=7[default=255];
 	optional bool gpu=9[default=false];
+	optional uint32 gpu_index=12[default=0];
+	optional uint32 tdim0=13[default=100];
+	optional uint32 tdim1=14[default=3];
+	optional uint32 tdim2=15[default=227];
+	optional uint32 tdim3=16[default=227];
 }
 

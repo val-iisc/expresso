@@ -70,6 +70,12 @@ class Ui_Form(QtGui.QWidget):
         self.label_3.setGeometry(QtCore.QRect(20, 210, 151, 31))
         self.label_3.setStyleSheet(_fromUtf8("font: 15pt \"Ubuntu Condensed\";background-color:rgba(0,0,0,0)"))
         self.label_3.setObjectName(_fromUtf8("label_3"))
+	self.pushButtonRemoveModel=QtGui.QPushButton(Form)
+	self.pushButtonRemoveModel.setGeometry(QtCore.QRect(510,246,20,20))
+	self.pushButtonRemoveModel.setText('X')
+	self.pushButtonRemoveModel.setStyleSheet('background-color:rgb(255,0,0);color:rgb(255,255,255)');
+	self.pushButtonRemoveModel.clicked.connect(self.removeModelPathSlot)
+
         self.label_4 = QtGui.QLabel(Form)
         self.label_4.setGeometry(QtCore.QRect(20, 314, 151, 31))
         self.label_4.setStyleSheet(_fromUtf8("font: 15pt \"Ubuntu Condensed\";background-color:rgba(0,0,0,0)"))
@@ -100,6 +106,8 @@ class Ui_Form(QtGui.QWidget):
 
 
     def setPath(self):
+	#Clear previous Properties
+
 	if(self.netName==None):return
         self.data=open(root+'/net/netData.prototxt').read()
 	self.netHandler=netConfig_pb2.Param();  
@@ -109,7 +117,7 @@ class Ui_Form(QtGui.QWidget):
 	    if elem.name==self.netName.upper():currentNet=elem
 	if(currentNet==None):return
 	if(currentNet.HasField('trainpath') and currentNet.trainpath!=''):self.lineEdit.setText(currentNet.trainpath)
-	if(currentNet.HasField('protopath') and currentNet.modelpath!=''):self.lineEdit_2.setText(currentNet.protopath)
+	if(currentNet.HasField('protopath') and currentNet.protopath!=''):self.lineEdit_2.setText(currentNet.protopath)
 	if(currentNet.HasField('modelpath') and currentNet.modelpath!=''):self.lineEdit_3.setText(currentNet.modelpath)
 	if(currentNet.HasField('meanpath') and currentNet.meanpath!=''):self.lineEdit_4.setText(currentNet.meanpath)
 	
@@ -119,6 +127,23 @@ class Ui_Form(QtGui.QWidget):
  
     def submit(self):
 	self.close()
+
+    def removeModelPathSlot(self):
+	if(self.netName==None):return
+        self.data=open(root+'/net/netData.prototxt').read()
+	self.netHandler=netConfig_pb2.Param();  
+        text_format.Merge(self.data,self.netHandler)
+	currentNet=None
+	netIdx=None
+	for idx,elem in enumerate(self.netHandler.net):
+	    if elem.name==self.netName.upper():
+		currentNet=elem
+		netIdx=idx
+		self.netHandler.net[idx].modelpath=''
+		open(root+'/net/netData.prototxt','w').write(str(self.netHandler))
+		self.lineEdit_3.clear()
+		return
+
 
 
 if __name__ == "__main__":

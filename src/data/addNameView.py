@@ -27,7 +27,7 @@ class Ui_Form(QtGui.QWidget):
     def __init__(self,parent=None,index=None):
         super(Ui_Form,self).__init__(parent)
 	self.setupUi(self)
-
+	
     def setupUi(self, Form):
         Form.setObjectName(_fromUtf8("Form"))
         Form.resize(421, 183)
@@ -65,7 +65,11 @@ class Ui_Form(QtGui.QWidget):
 	self.spinBoxDimZ.setMinimum(0)
 	self.spinBoxDimY.setMaximum(100000)
 	self.spinBoxDimZ.setValue(3);
-
+	#Data Augmentation Check Box
+	self.checkBoxAugmentation=QtGui.QCheckBox(Form)
+	self.checkBoxAugmentation.setGeometry(QtCore.QRect(10,145,135,45))
+	self.checkBoxAugmentation.setText('Augement Data')
+	
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)

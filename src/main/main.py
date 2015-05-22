@@ -221,7 +221,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
 	self.addNetTriggers()
 	self.addRefreshTriggers()
 	#Icon Related
-	self.currentView=0
+	self.currentView=0; 
 	self.initiallizeIcons()
 	self.updateIcons()
 	#NotificationRelated
@@ -232,7 +232,6 @@ class Ui_MainWindow(QtGui.QMainWindow):
 	self.notificationList=[]
 	#self.refreshNotificationList()
 	self.notificationHandler=NotificationHandler()
-	#self.notificationHandler.notificationList=[['Data View', 'Importing Data', u'tempdata1_1428953086.21', 1, u'Importing of Data has started for data tempdata1 from location /home/jaley/ACM/test.mat', 100],['Data View', 'Importing Data', u'tempdata_1428953072.2', 1, u'Importing of Data has started for data tempdata from location /home/jaley/ACM/train.mat', 100]]
 	
 	#Message Alert
 	self.messageAlert=QtGui.QTextEdit(self.centralwidget)
@@ -252,20 +251,18 @@ class Ui_MainWindow(QtGui.QMainWindow):
 	self.initiallizeGroupDelete()
 
         self.retranslateUi(MainWindow)
+
 	self.onMainView()
+	# May 15 Starts (Temporary Hiding of Task/Main/Default View)
+	self.onPushButtonDataClicked()
+	self.pushButtonDataDefault.hide()
+	## May 15 Ends
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
 
 
     def runprogress(self,value):
 	self.notificationItem.progressBar.setValue(int(value)*10)
-
-    def delay(self):
-	for i in range(10):
-	    sleep(1)
-	    print i
-	    self.signalCompleteTrigger.emit(i)
-	    #self.progressBar.setValue(i*10)
 
 	
     def retranslateUi(self, MainWindow):
@@ -371,6 +368,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
 	self.stackedCentral.setCurrentIndex(3)
 	self.stackedLeft2.setCurrentIndex(3)
 	self.stackedBottom.setCurrentIndex(3)
+	self.pageCentralExp.pushButtonBackSlot()
 	self.p.setColor(MainWindow.backgroundRole(), QtGui.QColor(150,150,90))
         MainWindow.setPalette(self.p)
 	self.onOtherThanMainView()
@@ -384,7 +382,6 @@ class Ui_MainWindow(QtGui.QMainWindow):
 	self.stackedBottom.setCurrentIndex(1)
 	self.p.setColor(MainWindow.backgroundRole(), QtGui.QColor(115,115,115))
         MainWindow.setPalette(self.p)
-	#inthread(self.delay)
 	self.onOtherThanMainView()
 
     def onPushButtonNetClicked(self):
@@ -428,14 +425,11 @@ class Ui_MainWindow(QtGui.QMainWindow):
 
     def addTrainTriggers(self):
 	### Flow 1 : Train Wizard Flow ###
-	self.pageLeft1Train.pushButtonNext.clicked.connect(self.pageCentralTrain.pushButtonNextSlot)
-	self.pageLeft1Train.pushButtonBack.clicked.connect(self.pageCentralTrain.pushButtonBackSlot)
-	#Bottom Slot
-	self.pageLeft1Train.pushButtonNext.clicked.connect(self.pageBottomTrain.pushButtonNextSlot)
-	self.pageLeft1Train.pushButtonBack.clicked.connect(self.pageBottomTrain.pushButtonBackSlot)
+	self.pageBottomTrain.pushButtonNext.clicked.connect(self.pageCentralTrain.pushButtonNextSlot)
+	self.pageBottomTrain.pushButtonBack.clicked.connect(self.pageCentralTrain.pushButtonBackSlot)
 	#Left2 Triggers
-	self.pageLeft1Train.pushButtonNext.clicked.connect(self.pageLeft2Train.pushButtonNextSlot)
-	self.pageLeft1Train.pushButtonBack.clicked.connect(self.pageLeft2Train.pushButtonBackSlot)
+	self.pageBottomTrain.pushButtonNext.clicked.connect(self.pageLeft2Train.pushButtonNextSlot)
+	self.pageBottomTrain.pushButtonBack.clicked.connect(self.pageLeft2Train.pushButtonBackSlot)
 	#Central Triggers
 	self.pageCentralTrain.page3Widget.pushButtonFinish.clicked.connect(self.pageCentralTrain.pushButtonBackSlot)
 	
@@ -448,11 +442,12 @@ class Ui_MainWindow(QtGui.QMainWindow):
 
     ####### Intermediate Train Triggers ################
 	self.pageCentralTrain.page0Widget.pushButton_3.clicked.connect(self.pageCentralTrain.switchToPageSVM)
-	self.pageCentralTrain.page0Widget.pushButton_3.clicked.connect(self.pageLeft1Train.switchToPageSVM)
+
+	self.pageCentralTrain.page0Widget.pushButton_3.clicked.connect(self.pageBottomTrain.switchToPageSVM)
 	self.pageCentralTrain.page0Widget.pushButton_3.clicked.connect(self.pageLeft2Train.switchToPageSVM)
 
 	self.pageCentralTrain.page0Widget.pushButton.clicked.connect(self.pageCentralTrain.pushButtonNextSlot)
-	self.pageCentralTrain.page0Widget.pushButton.clicked.connect(self.pageLeft1Train.pushButtonNextSlot)
+	self.pageCentralTrain.page0Widget.pushButton.clicked.connect(self.pageBottomTrain.pushButtonNextSlot)
 	self.pageCentralTrain.page0Widget.pushButton.clicked.connect(self.pageLeft2Train.pushButtonNextSlot)
 	
 
@@ -467,15 +462,18 @@ class Ui_MainWindow(QtGui.QMainWindow):
     def testing(self,index=0):
 	print 'hello',index
     def addExpTriggers(self):
+	self.pageLeft2Exp.page3Widget.signalUpdateTriggered.connect(self.pageCentralExp.page2Widget.applyFuncList)
 	### Flow 2 : Experiments Button Triggers ###
-	self.pageLeft1Exp.pushButtonNext.clicked.connect(self.pageCentralExp.pushButtonNextSlot)
-	self.pageLeft1Exp.pushButtonBack.clicked.connect(self.pageCentralExp.pushButtonBackSlot)
+	#self.pageLeft1Exp.pushButtonNext.clicked.connect(self.pageCentralExp.pushButtonNextSlot)
+	self.pageBottomExp.pushButtonBack.clicked.connect(self.pageCentralExp.pushButtonBackSlot)
 	#Left2 Triggers
-	self.pageLeft1Exp.pushButtonNext.clicked.connect(self.pageLeft2Exp.pushButtonNextSlot)
-	self.pageLeft1Exp.pushButtonBack.clicked.connect(self.pageLeft2Exp.pushButtonBackSlot)
+	#self.pageLeft1Exp.pushButtonNext.clicked.connect(self.pageLeft2Exp.pushButtonNextSlot)
+	self.pageBottomExp.pushButtonBack.clicked.connect(self.pageLeft2Exp.pushButtonBackSlot)
+	self.pageBottomExp.pushButtonBack.clicked.connect(self.pageBottomExp.pushButtonBack.hide)
+
 	#Bottom Triggers
-	self.pageLeft1Exp.pushButtonNext.clicked.connect(self.pageBottomExp.pushButtonNextSlot)
-	self.pageLeft1Exp.pushButtonBack.clicked.connect(self.pageBottomExp.pushButtonBackSlot)
+	#self.pageLeft1Exp.pushButtonNext.clicked.connect(self.pageBottomExp.pushButtonNextSlot)
+	###self.pageLeft1Exp.pushButtonBack.clicked.connect(self.pageBottomExp.pushButtonBackSlot) #Commented on May 15
 	#SaveFile
 	#Net List Based
 	#self.pageLeft2Exp.page1Widget.listWidget.currentRowChanged.connect(self.pageCentralExp.page1Widget.loadFromListSlot)
@@ -485,10 +483,24 @@ class Ui_MainWindow(QtGui.QMainWindow):
 	self.pageCentralExp.page0Widget.pushButton.clicked.connect(self.pageCentralExp.switchToPage1)
 	self.pageCentralExp.page0Widget.pushButton_2.clicked.connect(self.pageCentralExp.switchToPage2)
 	self.pageCentralExp.page0Widget.pushButton_3.clicked.connect(self.pageCentralExp.switchToPage3)
+	self.pageCentralExp.page0Widget.pushButton_4.clicked.connect(self.pageCentralExp.switchToPage4)
+	self.pageCentralExp.page0Widget.pushButton_5.clicked.connect(self.pageCentralExp.switchToPage5)
+
 	self.pageCentralExp.page0Widget.pushButton.clicked.connect(self.pageLeft2Exp.switchToPage1)
 	self.pageCentralExp.page0Widget.pushButton_2.clicked.connect(self.pageLeft2Exp.switchToPage2)
 	self.pageCentralExp.page0Widget.pushButton_3.clicked.connect(self.pageLeft2Exp.switchToPage3)
-	self.pageCentralExp.page0Widget.pushButton_5.clicked.connect(self.pageCentralExp.switchToPage5)
+	#self.pageCentralExp.page0Widget.pushButton_4.clicked.connect(self.pageLeft2Exp.switchToPage4)
+	#self.pageCentralExp.page0Widget.pushButton_5.clicked.connect(self.pageLeft2Exp.switchToPage5)
+
+
+	# Make Back Reappear
+	self.pageCentralExp.page0Widget.pushButton.clicked.connect(self.pageBottomExp.pushButtonBack.show)
+	self.pageCentralExp.page0Widget.pushButton_2.clicked.connect(self.pageBottomExp.pushButtonBack.show)
+	self.pageCentralExp.page0Widget.pushButton_3.clicked.connect(self.pageBottomExp.pushButtonBack.show)
+	self.pageCentralExp.page0Widget.pushButton_4.clicked.connect(self.pageBottomExp.pushButtonBack.show)
+	self.pageCentralExp.page0Widget.pushButton_5.clicked.connect(self.pageBottomExp.pushButtonBack.show)
+	
+
 
 
 
@@ -508,7 +520,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
 	self.pageCentralTrain.pageSVMWidget.refreshTrigger()
 	self.pageCentralTrain.page3Widget.widget.refreshTrigger()
 	self.pageLeft2Train.page1Widget.refreshTrigger()
-
+	self.pageCentralNet.page0Widget.refreshTrigger()
 	#Refreshing Net Flows	
 
     def addDataTriggers(self):
@@ -525,6 +537,10 @@ class Ui_MainWindow(QtGui.QMainWindow):
 	#Net Triggers
 	self.pageCentralNet.page0Widget.signalRefreshTrigger.connect(self.refreshAllScreens)
 	self.pageLeft2Net.widget.signalRefreshTrigger.connect(self.refreshAllScreens)
+	#Train Triggers
+	self.pageCentralTrain.signalRefreshTrigger.connect(self.refreshAllScreens)
+	self.pageCentralTrain.pageSVMWidget.signalRefreshTrigger.connect(self.refreshAllScreens)
+	
 
 
     def addNotificationTriggers(self):
@@ -535,16 +551,21 @@ class Ui_MainWindow(QtGui.QMainWindow):
 	self.pageCentralTrain.signalCompleteTrigger.connect(self.addNotificationItem)
 	self.pageCentralTrain.pageSVMWidget.signalStartedTrigger.connect(self.addNotificationItem)
 	self.pageCentralTrain.pageSVMWidget.signalCompleteTrigger.connect(self.addNotificationItem)
+	self.pageCentralExp.page1Widget.signalStartedTrigger.connect(self.addNotificationItem)
+	self.pageCentralExp.page1Widget.signalCompleteTrigger.connect(self.addNotificationItem)
 	self.pageCentralExp.page5Widget.signalStartedTrigger.connect(self.addNotificationItem)
 	self.pageCentralExp.page5Widget.signalCompleteTrigger.connect(self.addNotificationItem)
-	self.pageCentralExp.page1Widget.signalStartedTrigger.connect(self.addNotificationItem)
 
     def addNetTriggers(self):
-	self.pageLeft2Net.widget.listWidget.currentRowChanged.connect(self.pageCentralNet.page0Widget.onIndexChanged)
+	
+	self.pageLeft2Net.widget.listWidget.itemClicked.connect(self.netListTriggerFunc)
 	self.pageLeft2Net.widget.signalNewConfigTrigger.connect(self.pageCentralNet.page0Widget.onNewConfigClickedSlot)
 	###Inspect the bellow Trigger
 	self.pageCentralNet.page0Widget.signalCompleteTrigger.connect(self.pageLeft2Net.widget.updateList)
 
+    def netListTriggerFunc(self,extra=None):
+	row=self.pageLeft2Net.widget.listWidget.currentRow()
+	self.pageCentralNet.page0Widget.onIndexChanged(row)
 
 
     def addNotificationItem(self,l):
@@ -786,6 +807,6 @@ if __name__ == "__main__":
     MainWindow = QtGui.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
-    MainWindow.show()
+    MainWindow.show() 
     sys.exit(app.exec_())
 

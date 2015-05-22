@@ -9,6 +9,7 @@
 
 from PyQt4 import QtCore, QtGui
 from time import sleep
+import numpy as np
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -27,6 +28,8 @@ from multiprocessing import Process
 from signal import SIGTERM
 import time
 import importMultipleFoldersView
+sys.path.append(root+'/src/augmentation')
+import augmentationView
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
@@ -68,7 +71,7 @@ class Ui_Form(QtGui.QWidget):
         self.pushButtonOk.setObjectName(_fromUtf8("pushButton"))
         self.comboBox = QtGui.QComboBox(Form)
         self.comboBox.setGeometry(QtCore.QRect(192, 10, 161, 28))
-        self.comboBox.setStyleSheet(_fromUtf8("font: 14pt \"Ubuntu Condensed\";background-color:rgb(200, 200, 200)"))
+        self.comboBox.setStyleSheet(_fromUtf8("font: 14pt \"Ubuntu Condensed\";background-color:rgb(200, 200, 200);selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);"))
         self.comboBox.setObjectName(_fromUtf8("comboBox"))
         self.lineEditData = QtGui.QLineEdit(Form)
         self.lineEditData.setGeometry(QtCore.QRect(130, 34, 211, 32))
@@ -136,6 +139,12 @@ class Ui_Form(QtGui.QWidget):
 	self.addNewWidget=addNameView.Ui_Form()
 	self.addNewWidget.setGeometry(QtCore.QRect(0,0,421,183))
         self.addNewWidget.installEventFilter(self)
+	#self.addNewWidget.checkBoxAugmentation.hide() #March 16
+	#Aumentation Widget Optional
+	
+	self.addAugmentationWidget=augmentationView.Ui_Form()
+	self.addAugmentationWidget.setGeometry(100,100,291,255)
+	self.addAugmentationWidget.signalRefreshTrigger.connect(self.signalRefreshTrigger.emit)
 
 	#Event filters end
 	#------Other Modalities
@@ -164,6 +173,21 @@ class Ui_Form(QtGui.QWidget):
 	    self.dimx=self.addNewWidget.spinBoxDimX.value()
 	    self.dimy=self.addNewWidget.spinBoxDimY.value()
 	    self.dimz=self.addNewWidget.spinBoxDimZ.value()
+	    print self.addNewWidget.checkBoxAugmentation.isChecked() 
+	    if(self.addNewWidget.checkBoxAugmentation.isChecked()):
+		#Create LineList
+		if(self.comboBox.currentText()=='Text'):
+		    with open(self.lineEditFolderData.text().__str__()) as f:
+			allLines=f.readlines()
+			self.lineList=allLines[1:]
+			staticArg=allLines[0]
+			self.addAugmentationWidget.setParams(lineList=self.lineList,fileName=self.lineEditData.text().__str__(),dim=(self.dimz,self.dimx,self.dimy),staticArg=staticArg)
+				
+		
+		#Create LineList Ends
+		self.addAugmentationWidget.show()
+
+		return
 	    self.pushButtonOkClicked()
 	    
 
@@ -178,6 +202,7 @@ class Ui_Form(QtGui.QWidget):
             self.lineEditFolderData.setText(self.dialogHandle.getExistingDirectory(self,self.tr("Open File"),str(self.prevPath)))    
             #self.widget.setStyleSheet(_fromUtf8("background-color:rgb(255, 255, 0)"))	
 	#After Selection Starts
+	if self.lineEditFolderData.text().__str__()=='':return
 	self.addNewWidget.hideDim()
 	if(self.comboBox.currentText()=='Folder' or self.comboBox.currentText()=='Text'):self.addNewWidget.showDim()
 	self.addNewWidget.show()
@@ -190,7 +215,7 @@ class Ui_Form(QtGui.QWidget):
         if self.lineEditData.text()=='' or self.lineEditFolderData.text()=='':
             QtGui.QMessageBox.about(self,'Incomplete Conversion','Data Left Out\nCheck Form again')
         #For TEXT option
-        if(self.comboBox.currentIndex()==0 and str(self.lineEditData.text())!='' and self.lineEditFolderData.text()!=''):
+        if(self.comboBox.currentText().__str__()=='Text' and str(self.lineEditData.text())!='' and self.lineEditFolderData.text()!=''):
 
             if(os.path.exists(self.lineEditFolderData.text())==0):
                 QtGui.QMessageBox.about(self,'File Not Found',self.lineEditFolderData.text() +'\n Does not Exist')
@@ -201,24 +226,24 @@ class Ui_Form(QtGui.QWidget):
             return
         #Jaley End
 
-        if(self.comboBox.currentIndex()==2 and str(self.lineEditData.text())!='' and self.lineEditFolderData.text()!=''):
+        if(self.comboBox.currentText().__str__()=='Mat' and str(self.lineEditData.text())!='' and self.lineEditFolderData.text()!=''):
             if(os.path.exists(self.lineEditFolderData.text())==0):
                 QtGui.QMessageBox.about(self,'File Not Found',self.lineEditFolderData.text()+'\n Does not Exist')
                 return
 	    
 	    triggerList=self.createTriggerList()
-	    inthread(self.runParallel,DataHandler.mat2HDF5,str(self.lineEditData.text()), self.lineEditFolderData.text(),self.root+'/data',True,None,None,None,triggerList)#Parallel ThreadExecution
+	    inthread(self.runParallel,DataHandler.mat2HDF5,str(self.lineEditData.text()), str(self.lineEditFolderData.text()),self.root+'/data',True,None,None,None,triggerList)#Parallel ThreadExecution
 	    #os.kill(p.pid(),SIGTERM)
             return
 
-        if(self.comboBox.currentIndex()==1 and str(self.lineEditData.text())!='' and self.lineEditFolderData.text()!=''):
+        if(self.comboBox.currentText().__str__()=='LevelDB' and str(self.lineEditData.text())!='' and self.lineEditFolderData.text()!=''):
             if(os.path.exists(self.lineEditFolderData.text())==0):
 
                 QtGui.QMessageBox.about(self,'Folder Not Found',self.lineEditFolderData.text()+'/test_leveldb\n Does not Exist')
                 return
 
 	    triggerList=self.createTriggerList()
-	    inthread(self.runParallel,DataHandler.leveldb2HDF5,str(self.lineEditData.text()), self.lineEditFolderData.text(),self.root+'/data',True,self.dimx,self.dimy,self.dimz,triggerList)#Parallel ThreadExecution
+	    inthread(self.runParallel,DataHandler.leveldb2HDF5,str(self.lineEditData.text()), str(self.lineEditFolderData.text()),self.root+'/data',True,self.dimx,self.dimy,self.dimz,triggerList)#Parallel ThreadExecution
 
 
 
@@ -229,6 +254,17 @@ class Ui_Form(QtGui.QWidget):
 
 	    triggerList=self.createTriggerList()
 	    inthread(self.runParallel,DataHandler.folder2HDF5,str(self.lineEditData.text()), self.lineEditFolderData.text().__str__(),self.root+'/data',True,self.dimx,self.dimy,self.dimz,triggerList)#Parallel ThreadExecution	    
+
+	
+        if(self.comboBox.currentText().__str__()=='HDF5' and str(self.lineEditData.text())!='' and self.lineEditFolderData.text()!=''):
+
+            if(os.path.exists(self.lineEditFolderData.text())==0):
+                QtGui.QMessageBox.about(self,'File Not Found',self.lineEditFolderData.text() +'\n Does not Exist')
+                return
+	    triggerList=self.createTriggerList()
+	    inthread(self.runParallel,DataHandler.HDF52HDF5,str(self.lineEditData.text()), self.lineEditFolderData.text(),self.root+'/data',False,None,None,None,triggerList)#Parallel ThreadExecution
+
+            return
 
 
 	    return
@@ -300,6 +336,7 @@ class Ui_Form(QtGui.QWidget):
 	self.pushButtonMagicFolder.setText('Magic')
 	self.addMagicFolderWidget=importMultipleFoldersView.Ui_Form()
 	self.addMagicFolderWidget.setGeometry(QtCore.QRect(100,100,507,300))
+	self.pushButtonMagicFolder.hide()
 
 	pass
     def magicFolderSlot(self):

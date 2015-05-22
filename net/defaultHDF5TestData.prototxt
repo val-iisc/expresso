@@ -3,7 +3,9 @@
   top: "data"
   top: "label"
   hdf5_data_param {
-    source: "examples/cifar10/test.txt"
+    source: "source"
     batch_size: 100
+  }
+  transform_param {
   }
   include: { phase: TEST }

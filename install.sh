@@ -1,4 +1,4 @@
-CAFFE_ROOT=/home/jaley/caffe
+CAFFE_ROOT=/home/jaley/Documents/caffefresh/caffe-master
 EXPRESSO_ROOT=/home/jaley/Projects/expresso
 HTTP_PROXY=http://proxy.serc.iisc.in:3128
 

@@ -45,6 +45,14 @@ class Ui_Form(QtGui.QWidget):
         self.stackedWidget.setObjectName(_fromUtf8("widget"))
 	self.stackedWidget.setStyleSheet('background-color:rgb(150,150,90);border:0;')
 	Form.setStyleSheet('background-color:rgb(150,150,90)')
+
+	self.pushButtonBack=QtGui.QPushButton(Form)
+        self.pushButtonBack.setGeometry(510,0,75,30)
+        self.pushButtonBack.setStyleSheet('background-color:rgba(255,255,255,175);font:15pt \"Ubuntu Condensed\";')
+        
+        self.pushButtonBack.setText('Back')
+	self.pushButtonBack.hide()
+
 	
 	self.addPages()
         self.retranslateUi(Form)
@@ -95,12 +103,19 @@ class Ui_Form(QtGui.QWidget):
         self.stackedWidget.setCurrentIndex(self.currentIndex)
 
     def pushButtonBackSlot(self):
+        if(self.currentIndex==0):return
+        self.currentIndex=0;
+        #self.stackedWidget.setCurrentIndex(self.currentIndex)  
+        pass
+
+    """
+    def pushButtonBackSlot(self):
         print 'back clicked'
         if self.currentIndex==0:return
         self.currentIndex=self.currentIndex-1
         self.stackedWidget.setCurrentIndex(self.currentIndex)
 
-
+    """
 
 
 if __name__ == "__main__":

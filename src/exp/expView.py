@@ -22,9 +22,10 @@ import netConfig_pb2
 from google.protobuf import text_format
 sys.path.append(os.getenv('CAFFE_ROOT')+'/python/caffe/proto')
 import caffe_pb2
-
+from multiprocessing import Process
 from qtutils import inmain_later,inthread,inmain
 from netOperation import NetHandler
+import subprocess
 
 sys.path.append(os.getenv('CAFFE_ROOT')+'/python')
 import caffe
@@ -68,7 +69,7 @@ class Ui_Form(QtGui.QWidget):
         self.listWidget.setObjectName(_fromUtf8("listView"))
         self.comboBox = QtGui.QComboBox(Form)
         self.comboBox.setGeometry(QtCore.QRect(330, 110, 201, 31))
-        self.comboBox.setStyleSheet(_fromUtf8("background-color:rgb(230,240,210);\n"
+        self.comboBox.setStyleSheet(_fromUtf8("background-color:rgb(230,240,210);selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);\n"
 "font: 14pt \"Ubuntu Condensed\";"))
         self.comboBox.setObjectName(_fromUtf8("comboBox"))
         self.label = QtGui.QLabel(Form)
@@ -147,7 +148,7 @@ class Ui_Form(QtGui.QWidget):
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.comboBox_2 = QtGui.QComboBox(Form)
         self.comboBox_2.setGeometry(QtCore.QRect(20, 60, 256, 31))
-        self.comboBox_2.setStyleSheet(_fromUtf8("background-color:rgb(230,240,210);\n"
+        self.comboBox_2.setStyleSheet(_fromUtf8("background-color:rgb(230,240,210);selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);\n"
 "font: 14pt \"Ubuntu Condensed\";"))
         self.comboBox_2.setObjectName(_fromUtf8("comboBox_2"))
         self.label_3 = QtGui.QLabel(Form)
@@ -234,6 +235,11 @@ class Ui_Form(QtGui.QWidget):
 	handle=caffe_pb2.NetParameter()
 	if(self.currentNet.__str__()==""):return	
 	text_format.Merge(open(self.currentNet.protopath).read(),handle)
+        for elem in handle.layer:
+            item = QtGui.QListWidgetItem(elem.name)
+            item.setFlags(item.flags() | QtCore.Qt.ItemIsUserCheckable)
+            item.setCheckState(QtCore.Qt.Unchecked)
+            self.listWidget.addItem(item)
         for elem in handle.layers:
             item = QtGui.QListWidgetItem(elem.name)
             item.setFlags(item.flags() | QtCore.Qt.ItemIsUserCheckable)
@@ -251,19 +257,34 @@ class Ui_Form(QtGui.QWidget):
 	dataName=self.comboBox.currentText().__str__()
 	saveName=self.lineEditName.text().__str__()
 	netName=self.comboBox_2.currentText().__str__()
-	triggerList=self.createTriggerList()	
-	inthread(self.runParallel,netName,tickedList,batchSize,dataName,saveName,triggerList)
+	triggerList=self.createTriggerList()
+	#Write the Shell Script
+        scriptName=root+'/net/temp/temp_'+netName+'_'+dataName+'_'+saveName+'_'+str(batchSize)+'.sh'
+        logName=root+'/net/temp/temp_'+netName+'_'+dataName+'_'+saveName+'_'+str(batchSize)+'_log.txt'
+	if(os.path.exists(logName)):os.remove(logName)
+	with open(scriptName,'w') as f:
+	    for elem in tickedList:
+		f.write('python '+root+'/src/exp/extractFeatures.py '+saveName+' '+netName+' '+str(batchSize)+' '+elem+' '+dataName+'\n')
+
+	#Writing the Shell Script Ends
+	inthread(self.runParallel,scriptName,triggerList)
 
 
 
-    def runParallel(self,netName,netList,batchSize,dataName,saveName,triggerList):
+    def runParallel(self,scriptName,triggerList):
 	print triggerList
-        self.startTrigger(triggerList) #====>End
- 	handle=NetHandler(netName,netList,batchSize,dataName,saveName)
-	handle.start()	
-        self.signalRefreshTrigger.emit("Experiment Created with name"+saveName)
+	p=Process(target=self.callback,args=([scriptName]))
+        inthread(self.sidethread,p,scriptName,triggerList)
+	p.start()	
+	p.join()
+	sleep(0.5)
+        self.signalRefreshTrigger.emit("Experiment Created");
         triggerList=self.endTrigger(triggerList) #====>End
 
+    def callback(self,scriptName):
+	print scriptName
+        subprocess.call(['sh',scriptName])
+	
 
     def createTriggerList(self):
         triggerList=[]
@@ -290,8 +311,33 @@ class Ui_Form(QtGui.QWidget):
         triggerList[5]=100
         self.signalCompleteTrigger.emit(triggerList)
 
+    def sidethread(self,p,scriptName,triggerList):
+	logName=scriptName[:-3]+'_log.txt'
+	triggerList=self.startTrigger(triggerList)
+	sleep(1)
+	while(p.is_alive()):
+	    sleep(0.5)
+	    triggerList[3]=2
+	    placeholder=0;
+	    #[triggerList[4],placeholder]=self.getPercentage(logName)
+	    triggerList[5]=(triggerList[5]+3)
+	    if(triggerList[5]>99):triggerList[5]=99
+	    #print self.startTrigger(triggerList),'EXP TRIGGER'
+	    
+	    self.startTrigger(triggerList)
+	    sleep(3)
 
-
+    def getPercentage(self,logName):
+	with open(logName,'r') as f:	
+	    print logName
+	    lines=f.readlines();
+	    if(len(lines)==0):return ['BEGINING . . ',0];
+	    lastLine=lines[-1]
+	    layerName=lastLine.split(' ')[-1]
+	    [current,total]=lastLine.split(' ')[0].split(' ')
+	    percentage=int(100*float(current)/float(total));
+	    return [layername,percentage]
+	    
 
 	#self.findTicked()
     def refreshTrigger(self):

@@ -131,11 +131,22 @@ class Ui_Form(QtGui.QWidget):
 
 
     def onIndexChanged(self,index):
-
+	#Page 0 Changes
 	self.page0Widget.index=index
+	if(index!=None):
+	    self.page0Widget.widget.show()
+	else:
+	    self.page0Widget.widget.hide()
 	self.page0Widget.changeNet()
+	#PAGE 1 Changes
 	self.page1Widget.index=index
+	if(index!=None):
+	    self.page1Widget.widget.show()
+	else:
+	    self.page1Widget.widget.hide()
+
 	self.page1Widget.changeNet()
+	#Page 1 Changes End
 	if(index!=None):
 	    self.lineEdit.setText(self.netHandle.net[index].name)
 	else:
@@ -144,14 +155,15 @@ class Ui_Form(QtGui.QWidget):
 	self.page3Widget.setFields()
 
     def onNewConfigClickedSlot(self):
+	self.page0Widget.widget.hide()
 	self.page0Widget.index=None;
 	self.page0Widget.changeNet()
+	self.page1Widget.widget.hide()
 	self.page1Widget.index=None;
 	self.page1Widget.changeNet()
 	self.lineEdit.setText('Untitled')
 	self.page3Widget.index=None
 	self.page3Widget.setFields()
-
 
     def onSubmitClicked(self):
         self.netHandle=netConfig_pb2.Param();
@@ -196,6 +208,11 @@ class Ui_Form(QtGui.QWidget):
 	else:
 	    open(savefolder+'/'+extension,'w').write(self.page0Widget.subWidget.textEdit.toPlainText().__str__())
 	    ch.trainpath=savefolder+'/'+extension
+	    ch.tdim0=self.page0Widget.subWidget.dim[0]
+	    ch.tdim1=self.page0Widget.subWidget.dim[1]
+	    ch.tdim2=self.page0Widget.subWidget.dim[2]
+	    ch.tdim3=self.page0Widget.subWidget.dim[3]
+
 		
 	   	
 	#Step 1.2 : Saving Deploy Net
@@ -242,6 +259,7 @@ class Ui_Form(QtGui.QWidget):
 	
 	if(self.page3Widget.lineEditRawScale.text().__str__()!=''):ch.raw_scale=int(self.page3Widget.lineEditRawScale.text().__str__())
 	ch.gpu=self.page3Widget.checkBoxUseGPU.isChecked()
+	ch.gpu_index=int(self.page3Widget.lineEditGPUIndex.text().__str__())
 	ch.channel_swap=self.page3Widget.checkBoxChannelSwap.isChecked()
 	print ch
 
@@ -276,7 +294,6 @@ class Ui_Form(QtGui.QWidget):
 	#Step 3 : Refresh The display
 
     def copyFromDeploySlot(self):
-	print 'Copy from Deploy'
 	del self.page0Widget.subWidget.protohandler.layers[2];
 	trainLen=len(self.page0Widget.subWidget.protohandler.layers)
 	for idx in range(trainLen-2):
@@ -293,7 +310,6 @@ class Ui_Form(QtGui.QWidget):
 
 
     def copyFromTrainSlot(self):
-	print 'Copy from Train'	
 	deployLen=len(self.page1Widget.subWidget.protohandler.layers)
 	for idx in range(deployLen):
 	    del self.page1Widget.subWidget.protohandler.layers[0]
@@ -305,6 +321,11 @@ class Ui_Form(QtGui.QWidget):
 
 	self.page1Widget.subWidget.textEdit.setText(self.page1Widget.subWidget.protohandler.__str__())
 	self.page1Widget.subWidget.loadTreeWidget()
+
+    def refreshTrigger(self,extra=None):
+	self.netHandle=netConfig_pb2.Param()
+        text_format.Merge(open(root+'/net/netData.prototxt').read(),self.netHandle)
+
 
 	
 

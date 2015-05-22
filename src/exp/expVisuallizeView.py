@@ -29,7 +29,8 @@ import numpy as np
 import scipy
 import scipy.misc
 #import OperationHandler
-
+sys.path.append(root+'/src/functions')
+import FunctionHandler
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
@@ -61,7 +62,7 @@ class Ui_Form(QtGui.QWidget):
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.comboBox_2 = QtGui.QComboBox(Form)
         self.comboBox_2.setGeometry(QtCore.QRect(40, 38, 171, 27))
-        self.comboBox_2.setStyleSheet(_fromUtf8("background-color:rgb(230,240,210);\n"
+        self.comboBox_2.setStyleSheet(_fromUtf8("background-color:rgb(230,240,210);selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);\n"
 "font: 10pt \"Ubuntu Condensed\";"))
         self.comboBox_2.setObjectName(_fromUtf8("comboBox_2"))
         self.label_6 = QtGui.QLabel(Form)
@@ -77,23 +78,25 @@ class Ui_Form(QtGui.QWidget):
         self.label_6.setObjectName(_fromUtf8("label_6"))
         self.comboBox_3 = QtGui.QComboBox(Form)
         self.comboBox_3.setGeometry(QtCore.QRect(320, 37, 81, 27))
-        self.comboBox_3.setStyleSheet(_fromUtf8("background-color:rgb(230,240,210);\n"
+        self.comboBox_3.setStyleSheet(_fromUtf8("background-color:rgb(230,240,210);selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);\n"
 "font: 10pt \"Ubuntu Condensed\";"))
         self.comboBox_3.setObjectName(_fromUtf8("comboBox_3"))
         self.comboBox_4 = QtGui.QComboBox(Form)
         self.comboBox_4.setGeometry(QtCore.QRect(410, 37, 131, 27))
         self.comboBox_4.setStyleSheet(_fromUtf8("background-color:rgb(230,240,210);\n"
-"font: 10pt \"Ubuntu Condensed\";"))
+"font: 10pt \"Ubuntu Condensed\";selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);"))
         self.comboBox_4.setObjectName(_fromUtf8("comboBox_4"))
         self.comboBox = QtGui.QComboBox(Form)
         self.comboBox.setGeometry(QtCore.QRect(219, 40, 90, 24))
         self.comboBox.setStyleSheet(_fromUtf8("background-color:rgb(230,240,210);\n"
-"font: 10pt \"Ubuntu Condensed\";"))
+"font: 10pt \"Ubuntu Condensed\";selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);"))
         self.comboBox.setObjectName(_fromUtf8("spinBox"))
         self.widget = QtGui.QWidget(Form)
         self.widget.setGeometry(QtCore.QRect(40, 80, 500, 500))
         self.widget.setObjectName(_fromUtf8("widget"))
 	self.widget.setStyleSheet('background-color:rgba(230,240,210,0)')
+	self.funcList=[]
+	self.functionHandler=FunctionHandler.FunctionHandler()
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -107,8 +110,8 @@ class Ui_Form(QtGui.QWidget):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(_translate("Form", "Form", None))
-        self.label_2.setText(_translate("Form", "Feature Visuallization", None))
-        self.label_6.setText(_translate("Form", "Deploy Net Selection", None))
+        self.label_2.setText(_translate("Form", "Feature Visualization", None))
+        self.label_6.setText(_translate("Form", "Feature Sets", None))
 	#Initiallize the Combo Boxes
 	self.comboBox.addItems(['PER LAYER','PER IMAGE'])
 	self.comboBox_3.addItems(['MAX POOL','SUM POOL'])
@@ -209,6 +212,9 @@ class Ui_Form(QtGui.QWidget):
 	#Pooling Ends
         print data.min()
         data -= data.min()
+	#Update Display Begins
+	data=self.functionHandler.operate(self.funcList,data)
+	#Update Display Ends
         if(data.max()!=0):data /= data.max()
 
         # force the number of filters to be square
@@ -247,6 +253,10 @@ class Ui_Form(QtGui.QWidget):
 
 	self.initiallizeTriggers();
 
+    def applyFuncList(self,funcList):
+	self.funcList=funcList
+	self.commonSlot()
+	print funcList
 
 
 if __name__ == "__main__":

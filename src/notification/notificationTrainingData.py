@@ -22,8 +22,9 @@ import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtGui
 import numpy as np
 from qtutils import inthread,inmain_later
+import os
+import signal
 #Jaley Ends
-
 
 
 
@@ -68,6 +69,9 @@ class Ui_Form(QtGui.QWidget):
 	self.pushButtonStopTraining=QtGui.QPushButton(Form)
 	self.pushButtonStopTraining.setGeometry(QtCore.QRect(310,76,25,25))
 	self.pushButtonStopTraining.setText('X')	
+	self.pushButtonStopTraining.clicked.connect(self.stopTrainingSlot)
+	self.pushButtonStopTraining.setStyleSheet('background-color:rgb(255,0,0);color:rgb(255,255,255)');
+
 	#Push Button to kill process ends
 
 	#self.addValueSlot(0)
@@ -92,7 +96,7 @@ class Ui_Form(QtGui.QWidget):
 
     def plotLossArray(self):
 	print '^^^^^^^^^^^^^^^^^^^^^'
-	print self.l
+	print self.l,len(self.l)
 	print '^^^^^^^^^^^^^^^^^^^^^'
 	if(self.l==None):return
 	if(len(self.l)!=8):return
@@ -102,6 +106,7 @@ class Ui_Form(QtGui.QWidget):
 	lossList=self.l[6][0]
 	lossIter=self.l[6][1][:min(len(lossIter),len(lossList))]
 	lossList=self.l[6][0][:min(len(lossIter),len(lossList))]
+	print '%%%%%%%%%%%%%%%%%%%%%%%',self.l[6][-1],'%%%%%%%%%%%'
 	lossIter=np.array([int(elem) for elem in lossIter],dtype='int')
 	lossList=np.array([float(elem) for elem in lossList],dtype='float')
 
@@ -114,8 +119,14 @@ class Ui_Form(QtGui.QWidget):
 	print lossList
 	print '^^^^^^^^^^^^^^^^^^^^^'
 
-    def stopTraining(self):
-	print 
+    def stopTrainingSlot(self):
+	if(self.l==None):return
+	if(len(self.l)!=8):return
+	if(self.l[6]==None):return
+	pid=self.l[6][-1].split('.')[-1];
+	print pid,'@@@@@@@@@@'
+	os.kill(int(pid), signal.SIGQUIT) #or signal.SIGKILL 
+	pass
 
 
 if __name__ == "__main__":

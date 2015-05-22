@@ -13,6 +13,10 @@ import os
 root=os.getenv('EXPRESSO_ROOT')
 import h5py
 import numpy as np
+import subprocess
+from qtutils import inthread
+from multiprocessing import Process
+
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -28,6 +32,7 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_Form(QtGui.QWidget):
+    signalRefreshTrigger=QtCore.pyqtSignal(object)
     def __init__(self, parent=None,dataName=None):
         super(Ui_Form, self).__init__(parent)
         self.dataName=dataName
@@ -124,26 +129,19 @@ class Ui_Form(QtGui.QWidget):
     def onOkClicked(self):
 	#On Ok Clicked
 	value=self.horizontalSlider.value()
-
-	with h5py.File(root+'/data/'+self.dataName+'_split1.hdf5','w') as fw:
-	    f=h5py.File(root+'/data/'+self.dataName+'.hdf5','r')
-            comp_kwargs = {'compression': 'gzip', 'compression_opts': 1}
-	    #Writing the data
-	    fw.create_dataset('data',data=f['data'][:value],**comp_kwargs)
-	    if('label' in f.keys()):fw.create_dataset('label',data=f['label'][:value],**comp_kwargs)
-
-	    #Writing the data Ends
-	    f.close()
-	with h5py.File(root+'/data/'+self.dataName+'_split2.hdf5','w') as fw:
-	    f=h5py.File(root+'/data/'+self.dataName+'.hdf5','r')
-            comp_kwargs = {'compression': 'gzip', 'compression_opts': 1}
-	    #Writing the data
-	    fw.create_dataset('data',data=f['data'][value:],**comp_kwargs)	
-	    if('label' in f.keys()):fw.create_dataset('label',data=f['label'][value:],**comp_kwargs)
-	    #Writing the data Ends
-	    f.close()
-
+	inthread(self.runParallel,root,self.dataName,value)
 	self.closeSlot()
+
+    def runParallel(self,root,name,value):
+	p=Process(target=self.callback,args=(root,name,value))
+	p.start()
+	p.join()
+	self.signalRefreshTrigger.emit(name +'is split in two parts')
+
+    def callback(self,root,name,value):
+	subprocess.call(['python',root+'/src/data/Splitter.py',name,str(value)])
+
+	
 
     def closeSlot(self):
 	print 'Widget Closed'

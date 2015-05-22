@@ -11,7 +11,6 @@ from PyQt4 import QtCore, QtGui
 import os
 import wizardProto_pb2
 root=os.getenv('EXPRESSO_ROOT')
-root='/home/jaley/Projects/expresso'
 from google.protobuf import text_format
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -85,7 +84,6 @@ class Ui_Form(QtGui.QWidget):
 		self.heading2ComboBox.addItems([elem.heading2 for elem in self.textFlowParamHandler.subflow])
 		self.heading2ComboBox.currentIndexChanged.connect(self.onHeading2Changed)
 		self.onHeading2Changed()
-		print self.textFlowParamHandler
 
     
     def onHeading2Changed(self):
@@ -100,7 +98,6 @@ class Ui_Form(QtGui.QWidget):
 
 
     def createFlows(self):
-	#print self.textSubFlowParamHandler
 	self.totalPages=len(self.textSubFlowParamHandler.textiter)
 	if(self.totalPages==0):
 	    self.textEdit.clear();
@@ -125,11 +122,9 @@ class Ui_Form(QtGui.QWidget):
     def setText(self):
 	imgloc=self.textSubFlowParamHandler.textiter[self.pageNumber].imgloc
 	imgloc=imgloc.replace('$EXPRESSO_ROOT',root)
-	print 'ImageLoc### : ',imgloc
 	self.addImage(self.displayWidget,imgloc)
 	heading=self.textSubFlowParamHandler.textiter[self.pageNumber].heading3
 	text=self.textSubFlowParamHandler.textiter[self.pageNumber].text
-	print 'Heading### : ',heading
 	self.textEdit.setText('<h3>'+heading+'</h3>\n'+text)
 
 

@@ -100,7 +100,7 @@ class Ui_Form(QtGui.QWidget):
 	self.toolButton_3.clicked.connect(self.expandSlot)
         self.toolButton_4.setText(_translate("Form", "-", None))
 	self.toolButton_4.clicked.connect(self.shrinkSlot)
-	ctext="Train" if self.trainMode==True else "Deploy"
+	ctext="Deploy" if self.trainMode==True else "Train"
 	self.toolButton_5.setText(_translate("Form","Copy from "+ctext+" Net",None))
 	self.widget.setVisible(False)
 	self.toolButton_4.setVisible(False)
@@ -128,6 +128,10 @@ class Ui_Form(QtGui.QWidget):
 	self.expandSlot()
 	self.toolButton_4.hide()	
 	self.label.hide()
+	#15th May Starts
+	self.widget.hide()
+	#15th May Ends
+
 	#Hiding work ends
 
     def changeNet(self):
@@ -178,6 +182,7 @@ class Ui_Form(QtGui.QWidget):
 		
     def onNewNetClickedSlot(self):#Load/Modify Existing Configuration
         self.index=None;
+	self.widget.show()
         self.changeNet()
 
 

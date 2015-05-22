@@ -55,8 +55,11 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_Form(QtGui.QWidget):
+    signalUpdateTrigger=QtCore.pyqtSignal(object)
+    signalRefreshTrigger=QtCore.pyqtSignal(object)
     signalCompleteTrigger=QtCore.pyqtSignal(object)
     signalStartedTrigger=QtCore.pyqtSignal(object)
+
     def __init__(self,parent=None):
         super(Ui_Form,self).__init__(parent)
         self.setupUi(self)
@@ -71,6 +74,7 @@ class Ui_Form(QtGui.QWidget):
 	self.addPages()
         #self.widget.setGeometry(QtCore.QRect(0, 0, 611, 591))
         #self.widget.setObjectName(_fromUtf8("widget"))
+	self.signalUpdateTrigger.connect(self.addToNetConfiguration)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -117,7 +121,8 @@ class Ui_Form(QtGui.QWidget):
 
     def addPage1(self):
 	self.widget=QtGui.QScrollArea(self)
-	self.page1NetEditor=netWidget.MyForm(parent=self.widget,mylist=None,myloc=root+'/src/custom/lenet.prototxt',trainMode=True,readOnly=True)
+	self.page1NetEditor=netWidget.MyForm(parent=self.widget,mylist=None,myloc=root+'/src/custom/defaultTrain.prototxt',trainMode=True,readOnly=True)
+	self.page1NetEditor.treeWidget.clear()
 	self.widget.setGeometry(QtCore.QRect(0,0,611,591))
 	self.page1NetEditor.setStyleSheet("background-color:rgb(180,210,180);")
 	self.page1NetEditor.setGeometry(QtCore.QRect(0,0,611,591))
@@ -128,7 +133,8 @@ class Ui_Form(QtGui.QWidget):
         self.page2Container=QtGui.QWidget(self)
         self.page2Container.setGeometry(0,0,611,591)
         self.page2Container.setStyleSheet("background-color:rgb(120,180,120);")
-        self.page2Widget=solverView.Ui_Form(self.page2Container)
+        self.page2Widget=solverView.Ui_Form(self.page2Container,index=self.page1NetEditor.index)
+
         self.page2Widget.setGeometry(0,0,611,591)
         self.stackedWidget.addWidget(self.page2Container)
  
@@ -152,8 +158,11 @@ class Ui_Form(QtGui.QWidget):
     def pushButtonNextSlot(self):
 	if self.currentIndex==4:return
 	if self.currentIndex==3:
-	    self.currentIndex=-1
 	    self.createConfiguration()
+	    self.currentIndex=0
+	    self.stackedWidget.setCurrentIndex(self.currentIndex)
+	    return
+	   
 	print 'Next Clicked: '+str(self.currentIndex)
 	self.currentIndex=self.currentIndex+1
 	self.stackedWidget.setCurrentIndex(self.currentIndex)
@@ -178,9 +187,7 @@ class Ui_Form(QtGui.QWidget):
 	if(os.path.exists(path)==False):os.mkdir(root+'/net/train/'+self.page3Widget.lineEditConfigName.text().__str__().lower())
 	# 2. Add train_net,solver,etc into it.
 	self.index= self.page1NetEditor.index
-
 	self.maxIterations=10000
-
         self.netHandler=netConfig_pb2.Param();
         self.data=open(root+'/net/netData.prototxt').read()
         text_format.Merge(self.data,self.netHandler)
@@ -191,17 +198,28 @@ class Ui_Form(QtGui.QWidget):
 	    #Loading it instant 
 	    self.page2Widget.updateHandle()
 	    text_format.Merge(self.page2Widget.protoHandler.__str__(),solverHandle)
-	    
 	    #Loading it instant ends
 	    #text_format.Merge(open(self.netHandler.net[self.index].solverpath,'r').read(),solverHandle)
 	    solverHandle.snapshot_prefix=(path+'/'+name);
 	    solverHandle.net=(path+'/'+name+'_train.prototxt')
+	    if(self.netHandler.net[self.index].gpu==True):
+		solverHandle.solver_mode=1
+	    else:
+		solverHandle.solver_mode=0
 	    #Getting solver maximum iterations
 	    self.maxIterations=solverHandle.max_iter
 	    #Getting solver iterations ends
+	    open(self.netHandler.net[self.index].solverpath,'w').write(solverHandle.__str__())
 	    f.write(solverHandle.__str__())
 	
-
+	### FINETUNE STARTS
+	self.isFinetune=False
+	if(self.netHandler.net[self.index].modelpath!=""):
+	    reply=QtGui.QMessageBox.question(self, 'Message',
+                        "Do you want to finetune using existing weights?", QtGui.QMessageBox.Yes | 
+                        QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+            if(reply==QtGui.QMessageBox.Yes):self.isFinetune=True
+	### FINETUNE ENDS
 	trainDataName=self.page3Widget.widget.comboBoxTraining.currentText()
 	validationDataName=self.page3Widget.widget.comboBoxValidation.currentText()
 	shutil.copy(root+'/data/'+trainDataName+'.hdf5',path+'/'+name+'_train.hdf5')
@@ -209,57 +227,137 @@ class Ui_Form(QtGui.QWidget):
 	with open(path+'/'+name+'_trainscript.sh','w') as f:
 	    f.write("#!/usr/bin/env sh\n")
 	    #f.write("cd $CAFFE_ROOT\n")
-	    f.write(os.getenv('CAFFE_ROOT')+'/build/tools/caffe train --solver='+path+'/'+name+'_solver.prototxt\n')
+	    otherarguments=' -weights '+self.netHandler.net[self.index].modelpath if self.isFinetune==True else ''
+	    if(self.netHandler.net[self.index].gpu==True):otherarguments=otherarguments+' -gpu '+str(self.netHandler.net[self.index].gpu_index)
+	    f.write(os.getenv('CAFFE_ROOT')+'/build/tools/caffe train --solver='+path+'/'+name+'_solver.prototxt'+otherarguments+'\n')
 	    f.write('echo \'Train Completed \'')  
 	with open(path+'/'+name+'_train.txt','w') as f:
 	    f.write(path+'/'+name+'_train.hdf5')
 	with open(path+'/'+name+'_val.txt','w') as f:
 	    f.write(path+'/'+name+'_val.hdf5')
 	
-
 	#Change The train_test prototxt to associate right data
 	handle=caffe_pb2.NetParameter()
 	text_format.Merge(open(path+'/'+name+'_train.prototxt').read(),handle)
-	if(True):
-	#if(handle.layers[0].type in [5,12,29,24]):
-	    #del handle.layers[0].data_param
-	    layerHandle=caffe_pb2.LayerParameter()
-	    text_format.Merge(open(root+'/net/defaultHDF5TrainData.prototxt').read(),layerHandle)
-	    handle.layers[0].name=name.lower()
-	    if(self.netHandler.net[self.index].has_mean==True):
+	######### NEW VERSION #########################
+	if len(handle.layers)==0:
+	    if(True):
+		if(True):
+		#if(handle.layers[0].type in [5,12,29,24]):
+		    #del handle.layers[0].data_param
+		    layerHandle=caffe_pb2.LayerParameter()
+		    text_format.Merge(open(root+'/net/defaultHDF5TrainDataNew.prototxt').read(),layerHandle)
+		    #if(self.netHandler.net[self.index].has_mean==True):
+			#layerHandle.transform_param
+			#layerHandle.transform_param.mean_file=self.netHandler.net[self.index].meanpath
+		    #else: 
+			#layerHandle.ClearField('transform_param')
+		    handle.layer[0].CopyFrom(layerHandle)
+		    handle.layer[0].name=name.lower()
+		    #BatchSize Starts
+		    batchSize=self.page3Widget.widget.lineEditBatchSizeTraining.text().__str__()
+		    batchSize=100 if batchSize=="" else int(batchSize)
+		    handle.layer[0].hdf5_data_param.batch_size=batchSize
+		    #BatchSize Ends
+		    handle.layer[0].hdf5_data_param.source=path+'/'+name+'_train.txt'
+		    print handle.layer[0]
 
-	        #layerHandle.transform_param
-	        layerHandle.transform_param.mean_file=self.netHandler.net[self.index].meanpath
+		if(self.page3Widget.widget.checkBoxValidation.checkState()>0): 
+		#if(handle.layers[1].type in [5,12,29,24]):#handle.layers[1].type="HDF5Data"
+		    layerHandle=caffe_pb2.LayerParameter()
+		    text_format.Merge(open(root+'/net/defaultHDF5TestDataNew.prototxt').read(),layerHandle)
+		    handle.layer[1].CopyFrom(layerHandle)
+		    handle.layer[1].name=name
+		    #BatchSize Starts
+		    batchSize=self.page3Widget.widget.lineEditBatchSizeValidation.text().__str__()
+		    batchSize=100 if batchSize=="" else int(batchSize)
+		    handle.layer[1].hdf5_data_param.batch_size=batchSize
+		    #BatchSize Ends
+		    handle.layer[1].hdf5_data_param.source=path+'/'+name+'_val.txt'
+		    print handle.layer[1]
+		else:
+		    del handle.layer[1] 
+		    for layerIdx,layer in enumerate(handle.layer):
+			for incIdx,inc in enumerate(layer.include):
+			    if inc.HasField('phase'):
+			        if(inc.phase==0): del handle.layer[layerIdx].include[incIdx]
+			    #Check Later what happens if only 'phase' is removed.
+			        else: del handle.layer[layerIdx]
 
-	    handle.layers[0].CopyFrom(layerHandle)
-	    handle.layers[0].hdf5_data_param.source=path+'/'+name+'_train.txt'
-	    print handle.layers[0]
+		    #if(self.netHandler.net[self.index].has_mean==True):
+			#layerHandle.transform_param
+			#layerHandle.transform_param.mean_file=self.netHandler.net[self.index].meanpath
+		    #else:
+			#layerHandle.ClearField('transform_param')
 
-	if(True): 
-	#if(handle.layers[1].type in [5,12,29,24]):#handle.layers[1].type="HDF5Data"
-	    layerHandle=caffe_pb2.LayerParameter()
-	    text_format.Merge(open(root+'/net/defaultHDF5TestData.prototxt').read(),layerHandle)
-	    handle.layers[1].name=name
-	    handle.layers[1].CopyFrom(layerHandle)
-	    handle.layers[1].hdf5_data_param.source=path+'/'+name+'_val.txt'
-	    print handle.layers[0]
-	    
+
+	################ OLD VERSION #########################
+	else:
+	    if(True):
+		if(True):
+		#if(handle.layers[0].type in [5,12,29,24]):
+		    #del handle.layers[0].data_param
+		    layerHandle=caffe_pb2.LayerParameter()
+		    text_format.Merge(open(root+'/net/defaultHDF5TrainData.prototxt').read(),layerHandle)
+		    handle.layers[0].name=name.lower()
+		    if(self.netHandler.net[self.index].has_mean==True):
+
+			#layerHandle.transform_param
+			layerHandle.transform_param.mean_file=self.netHandler.net[self.index].meanpath
+		    else:
+			layerHandle.ClearField('transform_param')
+
+
+		    handle.layers[0].CopyFrom(layerHandle)
+		    #BatchSize Starts
+		    batchSize=self.page3Widget.widget.lineEditBatchSizeTraining.text().__str__()
+		    batchSize=100 if batchSize=="" else int(batchSize)
+		    handle.layer[0].hdf5_data_param.batch_size=batchSize
+		    #BatchSize Ends
+
+		    handle.layers[0].hdf5_data_param.source=path+'/'+name+'_train.txt'
+		    print handle.layers[0]
+
+		if(self.page3Widget.widget.checkBoxValidation.checkState()>0): 
+		#if(handle.layers[1].type in [5,12,29,24]):#handle.layers[1].type="HDF5Data"
+		    layerHandle=caffe_pb2.LayerParameter()
+		    text_format.Merge(open(root+'/net/defaultHDF5TestData.prototxt').read(),layerHandle)
+		    handle.layers[1].name=name
+		    handle.layers[1].CopyFrom(layerHandle)
+		    #BatchSize Starts
+		    batchSize=self.page3Widget.widget.lineEditBatchSizeValidation.text().__str__()
+		    batchSize=100 if batchSize=="" else int(batchSize)
+		    handle.layer[1].hdf5_data_param.batch_size=batchSize
+		    #BatchSize Ends
+		    handle.layers[1].hdf5_data_param.source=path+'/'+name+'_val.txt'
+		    print handle.layers[1]
+		    if(self.netHandler.net[self.index].has_mean==True):
+			#layerHandle.transform_param
+			layerHandle.transform_param.mean_file=self.netHandler.net[self.index].meanpath
+		    else:
+			layerHandle.ClearField('transform_param')
+		else:
+		    del handle.layers[1]
+
+	####### REMODIFICATION OF FIRST TWO LAYERS START
 
 	open(path+'/'+name+'_train.prototxt','w').write(handle.__str__())
 	print 'PATH BEFORE PROGRESS',path
 
 	
 	triggerList=self.createTriggerList()
-	inthread(self.runParallel,name,path,triggerList,self.maxIterations)
+	inthread(self.runParallel,name,path,triggerList,self.maxIterations,str(self.netHandler.net[self.index]))
 	#Finally run the process
 
 
-    def runParallel(self,name,path,triggerList,maxIterations):
+    def runParallel(self,name,path,triggerList,maxIterations,netParam):
 	p=Process(target=self.callback,args=(name,path))
 	inthread(self.sidethread,p,triggerList,maxIterations)
 	p.start()
 	p.join()
 	sleep(0.5)
+	self.signalUpdateTrigger.emit([name,netParam]);
+	self.signalRefreshTrigger.emit(name)
         self.endTrigger(triggerList) #====>End
 	return
 
@@ -312,7 +410,8 @@ class Ui_Form(QtGui.QWidget):
 	    print maxIterations,'%%%%%%%%','MaxIterations'
             triggerList[5]=0 if len(result[1][1])==0 else int(100*float(int(result[1][1][-1]))/float(int(maxIterations)))
 	    triggerList[4]=result[0]
-	    triggerList[6]=result[1]
+	    triggerList[6]=result[1]+[result[2]]
+	    print result[2], 'FILENAME !!!!!!!!!!!!!!!!!!!'
 	    print result[1]
             self.startTrigger(triggerList)
             print 'is alive'
@@ -351,7 +450,7 @@ class Ui_Form(QtGui.QWidget):
             lines=open(foldername+'/'+filename,'r').readlines()
 	    print '%%%%%%%%%%%%% Reached Here %%%%'
             print lines[-3:-1] 
-            return [' '.join(lines[-3:-1]),self.getInformation('/tmp/'+filename)]
+            return [' '.join(lines[-3:-1]),self.getInformation('/tmp/'+filename),filename]
 	    
         return [' ',None]
 
@@ -383,6 +482,71 @@ class Ui_Form(QtGui.QWidget):
 	print 'SVM Page in central'
 	self.stackedWidget.setCurrentIndex(5)
 	self.currentIndex=5
+
+    def addToNetConfiguration(self,params):
+	name=str(params[0]).lower()
+	config=params[1]
+	handle=netConfig_pb2.NetParam()
+	text_format.Merge(config,handle)
+	saveHandle=netConfig_pb2.NetParam()
+	#subprocess.call(['sh',path+'/'+name+'_trainscript.sh'])
+	proc=subprocess.Popen('ls '+root+'/net/train/'+name+' -tr *.caffemodel | tail -1',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)	
+	out,err=proc.communicate()
+	lastGeneratedModel=out.split('\n')[0]
+
+	print 'LAST MODEL : ',lastGeneratedModel
+
+	if(err!=''):print 'ERROR LOG',err
+	if(lastGeneratedModel==''):return
+
+
+
+	### Create Entry in netConfig and Add Appropreate Folders
+	#Create a new folder root+'/net/data/'
+	if(os.path.exists(root+'/net/data/'+name.lower())==False):os.mkdir(root+'/net/data/'+name)
+	dirpath=root+'/net/data/'+name
+
+	#Deploy Path
+	if(handle.protopath!=""):
+	    shutil.copyfile(handle.protopath,root+'/net/data/'+name+'/'+name+'_deploy.prototxt')
+	    saveHandle.protopath=root+'/net/data/'+name+'/'+name+'_deploy.prototxt'
+	else:
+	    saveHandle.protopath=""
+
+	#Train Path
+	if(handle.trainpath!=""):
+	    shutil.copyfile(handle.trainpath,root+'/net/data/'+name+'/'+name+'_train.prototxt')
+	    saveHandle.trainpath=root+'/net/data/'+name+'/'+name+'_train.prototxt'
+	else:
+	    saveHandle.trainpath=""
+
+	if(handle.solverpath!=""):
+	    shutil.copyfile(handle.solverpath,root+'/net/data/'+name+'/'+name+'_solver.prototxt')
+	    saveHandle.solverpath=root+'/net/data/'+name+'/'+name+'_solver.prototxt'
+
+	else:
+	    saveHandle.solverpath=""
+
+	
+	##Edit Later
+	shutil.copyfile(root+'/net/train/'+name+'/'+lastGeneratedModel,root+'/net/data/'+name+'/'+name+'_model.caffemodel');
+	saveHandle.modelpath=root+'/net/data/'+name+'/'+name+'_model.caffemodel';
+
+	saveHandle.has_mean=handle.has_mean
+	saveHandle.meanpath=handle.meanpath
+	saveHandle.channel_swap=handle.channel_swap
+	saveHandle.gpu=handle.gpu
+	name=name.upper()
+	saveHandle.name=name;
+	
+	open(root+'/net/netData.prototxt','a').write('\nnet{\n'+str(saveHandle)+'\n}')
+
+
+
+
+	### Ad
+
+	
 
    
 

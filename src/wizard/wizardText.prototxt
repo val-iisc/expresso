@@ -3,34 +3,327 @@ flow{
 	subflow{
 		heading2:"default"
 		textiter{
-			heading3:"Step 1: Initiallize Data"
-			text:"In this flow, we will learn how to import data"
+			heading3:"Step 1: Select type of data"
+                        text:"Select the type of data (Text,MATLAB's .mat, HDF5 etc.) from the drop-down list to the right. To know about the various types of data that can be imported, select the option beginning with the phrase 'Import Data Type ...' in the  drop-down menu above this wizard." 
 			imgloc:"$EXPRESSO_ROOT/res/wizard/importViewDefault.png"
 		}
 		textiter{
-			heading3:"Step 2: Initiallize Data"
-			text:"In this flow, we will learn how to import data"
+			heading3:"Step 2: Load Data"
+			text:"Loading data consists of two steps<h4> 2.1. Selecting data to load </h4> Load data by clicking on the ... button below the data type drop-down list on the right.<h4> 2.2. Name the data and resize it(optionally)</h4> Next, you will be prompted to enter a name. If the data being loaded contains variable sized images (typically the case when loaded from a folder or a file list), by default they will be resized to 227x227x3, which can be edited after entering the data name."
 			imgloc:"$EXPRESSO_ROOT/res/wizard/importViewTextStep1.png"
 		}
 		textiter{
-			heading3:"Step 3: Finallize Data"
-			text:"In this flow, we will learn how to import data"
+			heading3:"Step 3: View / Select Data"
+			text:"If the data import is successful, a listing appears in the <b>View/Select Data</b> table on the right. The listing shows important properties of the loaded data such as number of elements, width and height of images, number of channels. <h4> Processing imported data </h4> The imported data can be further processed in a variety of ways. These can be explored by right-clicking on the data name. To know more about the processing methods, select the option beginning with the phrase 'Data Processing ...' in the drop-down menu above this wizard. <h4>Image Browser</h4>The loaded data can be viewed using the rudimentary image browser on the right. If a category label is associated with the data, it is shown in the rop-right corner. In additon, the images can be zoomed in/out on an individual basis."
 			imgloc:"$EXPRESSO_ROOT/res/wizard/importViewTextStep2.png"
 		}
 		
+	}
+        subflow{
+		heading2:"Import Data Type [Text]"
 		textiter{
-			heading3:"Step 3: Finallize Data"
-			text:"In this flow, we will learn how to import data"
-			imgloc:"$EXPRESSO_ROOT/res/wizard/importViewTextStep2.png"
+			heading3:""
+			text: "Choose this option if your input data consists of paths to image files, one line per file. The other permitted format is each line contains a path to an image followed by whitespace followed by a numerical label. <br><font color=white>WARNING: The image file path should not contain any whitespaces.</font>"
+		}
+	}
+        subflow{
+		heading2:"Import Data Type [LevelDB/.mat/HDF5]"
+		textiter{
+			heading3:""
+			text: "Choose this option if your input data is a leveldb folder/.mat file/HDF5 file."
+		}
+	}
+        subflow{
+		heading2:"Import Data Type [Folder]"
+		textiter{
+			heading3:""
+			text: "Choose this option if your input images are present in a folder."
 		}
 	}
 	subflow{
-		heading2:"Importing HDF5 Data"
+		heading2:"Data Processing : Attach/Change Label"
 		textiter{
-			heading3:"Step 3: Finallize Data"
-			text:"In this flow, we will learn how to import data"
-			imgloc:"$EXPRESSO_ROOT/res/wizard/importViewTextStep2.png"
-
+			heading3:""
+			text: "Sometimes, numerical category label information is present as a separate list (text file). To associate this information with already loaded data, this option can be used. Alternately, existing label data can be overwritten with a new set of labels if required."
+		}
+	}
+	subflow{
+		heading2:"Data Processing : Split"
+		textiter{
+			heading3:""
+			text: "A common data processing step is to split data into training and testing portions. Using the split option lets you split either according to a split percentage or an exact value. Clicking <b>OK</b> creates the split versions of the original data. <br<br>For example, if the name of the original data is foo and the split ratio is 30%, then two additional entries foo_split1(30%) and foo_split2(70%) are created and displayed in the <b>View/Select</b> data list."
+		}
+	}
+	subflow{
+		heading2:"Data Processing : Remove"
+		textiter{
+			heading3:""
+			text: "This option lets you delete the data from the list of imported data.<font color=white> WARNING: This action cannot be undone.</font>"
+		}
+	}
+	subflow{
+		heading2:"Data Processing : Export"
+		textiter{
+			heading3:""
+			text: "This option can be used as handy way of obtaining data in other desired formats. Currently, exporting to .mat and HDF5 are supported."
 		}
 	}
 }
+
+flow{
+	heading1:"Experiment View"
+	subflow{
+		heading2:"default"
+		textiter{
+			heading3:"Introduction"
+			text:"This view lets us utilize imported data and net configurations to perform a variety of experiments. Select from the drop-down menu above the wizard for details of how various experiments can be performed."
+		}
+	}	
+	subflow{
+		heading2:"Experiment : Extract features via pre-trained net"
+		textiter{
+			heading3:"Step 0 : Click on <font color=white>Extract Features via pre-trained net</font> button on the right of the wizard"
+			text:""
+		}
+		textiter{
+			heading3:"Step 1 : Select net configuration"
+			text:"From the drop-down menu on the right titled <b>Deploy Net Selection</b>, select the pre-trained net to be used for extracting features.<br><font color=white>NOTE: Only net configurations with models(weights) are shown in the drop-down list mentioned above.</font>"
+		}
+		textiter{
+			heading3:"Step 2 : Select net layers"
+			text:"Once the net has been chosen, check off the layers from which features are to be extracted.<br><font color=white>NOTE: The checkbox list allows you to extract features from multiple layers.</font>"
+		}
+		textiter{
+			heading3:"Step 3 : Select data"
+			text:"From the drop-down menu titled <b>Data Selection</b>, select the data which will be passed through the net for feature extraction.<br><font color=white>WARNING: Input dimensions are important when deploy net is used. If the input dimensions of deploy net and data are different, feature extraction will not work. To fix this, either change the input dimensions of deploy net (if the net is fully convolutional) or resize the data.</font>"
+		}
+		textiter{
+			heading3:"Step 4 : Specify batch size"
+			text:"Next, enter a batch-size (minimum 1) in the textbox titled <b>BatchSize</b>. Here, batch-size refers to the number of data elements which are processed simultaneously during feature extraction."
+		}
+		textiter{
+			heading3:"Step 5 : Name feature set and begin"
+			text:"Enter the name by which the extracted features will be referred to in the textbox titled <b>Name</b> and click <b>Generate</b> to begin the feature extraction process. Once the process completes, the feature set can be viewed as an entry in the list titled <b>Experiment List</b> towards the bottom-left of the GUI."
+		}
+	}
+	subflow{
+		heading2:"Experiment : Visualize deep network features"
+		textiter{
+			heading3:"Click on <font color=white>Visualize deep network features</font> button on the right side of wizard."
+			text:""
+		}
+		textiter{
+			heading3:"Step 1 : Select features"
+			text:"From the drop-down menu titled <b>Feature Sets</b>, select the feature set to be visualized."
+		}
+		textiter{
+			heading3:"Step 2 : Select visualization option"
+			text:"If you wish to visualize the features on a per-image basis, select the option <b>PER-IMAGE</b> in the drop-down menu adjacent to <b>Feature Sets</b>. Alternately, if you wish to visualize the features on a per-layer basis, select the <b>PER-LAYER</b> option."
+		}
+		textiter{
+			heading3:"Step 3 (Optional) : Select pooling"
+			text:"If you wish to visualize on a <b>PER-LAYER</b> basis, the features of all the images are combined. If you wish to visualize this combination as achieved by max-pooling, select the option <b>MAX POOL</b> in the drop-down menu. Alternately, if you wish to visualize this combination as achieved by sum-pooling, select the option <b>SUM POOL</b>."
+		}
+		textiter{
+			heading3:"Step 4 : Select layer or image"
+			text:"If your visualization option (Step 2) was <b>PER-LAYER</b>, you can choose the layer name in the rightmost drop-down menu. Alternately, if your visualization option was <b>PER-IMAGE</b>, this menu shows the image index."
+		}
+		textiter{
+			heading3:"Step 5 (Optional) : Pipeline operations"
+			text:"A variety of mathematical transformations can be designed and applied in a pipeline fashion on the feature visualizations. For details, select the 'Pipeline Operations' option in the drop-down menu above the wizard. If you wish to have a customized operation as an option, select the 'Add Custom Operation' option in the drop-down menu above the wizard."
+		}
+	}
+	subflow{
+		heading2:"Experiment : Evaluate pre-trained net"
+		textiter{
+			heading3:"Click on <font color=white>Evaluate pre-trained net</font> button on the right side of wizard."
+			text:""
+		}
+		textiter{
+			heading3:"Step 1 : Select features"
+			text:"From the drop-down menu titled <b>Feature Set</b>, select the features to use."
+		}
+		textiter{
+			heading3:"Step 2 : Select type of loss"
+			text:"Select the type of loss function from the drop-down menu titled <b>Loss Type</b>. Currently, only <b>SOFTMAX</b> loss is supported."
+		}
+		textiter{
+			heading3:"Step 3 : Select layer(s) and start evaluation"
+			text:"Select the layer(s) on which loss function / accuracy is computed. Currently, for <b>SOFTMAX</b> loss type, only the layer dealing with output probabilities should be selected. <br><br>Next, click <b>Evaluate</b>. Once the evaluation is complete, the obtained accuracy is displayed in the box titled <b>Accuracy</b>."
+		}
+	}
+	subflow{
+		heading2:"Experiment : Evaluate pre-trained SVM"
+		textiter{
+			heading3:"Click on <font color=white>Evaluate pre-trained SVM</font> button on the right side of wizard."
+			text:""
+		}
+		textiter{
+			heading3:"Step 1 : Select test data"
+			text:"From the drop-down menu titled <b>Testing Data</b>, select the test data to be used for evaluation."
+		}
+		textiter{
+			heading3:"Step 2 : Select SVM model and evaluate"
+			text:"From the drop-down menu titled <b>Model Name</b>, select the pre-trained SVM to be evaluated. Next, click <b>Evaluate</b> to begin the evaluation. Once this is complete, the obtained accuracy is displayed in the box titled <b>Accuracy</b>."
+		}
+	}
+	subflow{
+		heading2:"Pipeline Operations"
+		textiter{
+			heading3:"Select operation"
+			text:"Select an operation from the list box below the wizard, near the text titled <b>Pipeline Operations</b>."
+		}
+		textiter{
+			heading3:"Select parameters"
+			text:"Selecting an operation also displays its equation at the bottom, showing its control parameters. To change these control parameters, you can use the slider bars titled <b>a</b> and <b>b</b>. The effect of changing the control parameters is also reflected in the graph of the mathematical function corresponding to the operation."
+		}
+		textiter{
+			heading3:"Add to pipeline"
+			text:"The operation (with its parameters optionally changed as desired) can be added to a pipeline. To do so, click on <b>=></b>. All operations added to this list are applied sequentially, beginning with the first item in the pipeline."
+		}
+		textiter{
+			heading3:"View changes"
+			text:"The effect of these operations can be viewed on-the-fly by checking the <b>On Fly</b> checkbox. Alternately, the effect can be viewed by clicking the <b>Apply</b> button."
+		}
+	}
+	
+}
+
+flow{
+	heading1:"Train View"
+	subflow{
+		heading2:"default"
+		textiter{
+			heading3:""
+			text:"This view is used to perform training tasks, either by directly using the net or by training external classifiers (e.g. SVM) on features extracted using a pre-trained net. Select from the drop-down menu above the wizard for details of how training can be performed in these two scenarios."
+		}
+	}
+	subflow{
+		heading2:"Train New Model"
+		textiter{
+			heading3:"Click on the button <font color=white>Train New/Finetune Model</font> towards the right of the wizard."
+			text:""
+		}
+		textiter{
+			heading3:"Step 1: Select net"
+			text:"From the list of net configurations in the listbox at the bottom left of the GUI titled <b>Configuration Data</b>,  select the net to be trained. Having done so, click on <b>Next</b> button at the bottom right of the GUI."
+		}
+		textiter{
+			heading3:"Step 2 : Upload / Enter training parameters"
+			text:"You can enter the training parameters manually. Alternately, you can upload a file containing solver parameters and also change them using the GUI after uploading. Having done so, click on <b>Next</b> button at the bottom right of the GUI."
+		}
+		textiter{
+			heading3:"Step 3 : Select train and validation data"
+			text:"From the drop-down lists, select the training data. If you would also like to perform validation, check the box for including validation data. This will enable selection of data for validation as well. "
+		}
+		textiter{
+			heading3:"Step 4 : Select batch size"
+			text:"Enter batch-size. Here, batch-size refers to the number of samples processed together in one iteration of training/validation.<br><font color=white>NOTE:Currently, batch sizes for training and validation are the same. This need not necessarily be the case. We intend to add separate batch size capability in a future relase.</font>"
+		}
+		textiter{
+			heading3:"Step 5 : Provide name for trained model and start training"
+			text:"Enter the name by which you wish to refer to the trained model in the box titled <b>Name of Trained Model</b>. Click the <b>Finish</b> button to start training."
+		}
+	}
+	subflow{
+		heading2:"Finetune Existing Model"
+		textiter{
+			heading3:"Click on the button <font color=white>Train New/Finetune Model</font> towards the right of the wizard."
+			text:""
+		}
+		textiter{
+			heading3:"Step 1: Select net"
+			text:"From the list of net configurations in the listbox at the bottom left of the GUI titled <b>Configuration Data</b>,  select the net to be trained. Having done so, click on <b>Next</b> button at the bottom right of the GUI."
+		}
+		textiter{
+			heading3:"Step 2 : Upload / Enter training parameters"
+			text:"You can enter the training parameters manually. Alternately, you can upload a file containing solver parameters and also change them using the GUI after uploading. Having done so, click on <b>Next</b> button at the bottom right of the GUI."
+		}
+		textiter{
+			heading3:"Step 3 : Select train and validation data"
+			text:"From the drop-down lists, select the training data. If you would also like to perform validation, check the box for including validation data. This will enable selection of data for validation as well. "
+		}
+		textiter{
+			heading3:"Step 4 : Select batch size"
+			text:"Enter batch-size. Here, batch-size refers to the number of samples processed together in one iteration of training/validation.<br><font color=white>NOTE:Currently, batch sizes for training and validation are the same. This need not necessarily be the case. We intend to add separate batch size capability in a future relase.</font>"
+		}
+		textiter{
+			heading3:"Step 5 : Provide name for trained model and start training"
+			text:"Enter the name by which you wish to refer to the trained model in the box titled <b>Name of Trained Model</b>. Click the <b>Finish</b> button. <br>If there is a model associated with net configuration, the user is asked whether the model needs to be finetuned (Yes option) or trained afresh (No option). In the former case, the existing model's weights are fine-tuned. In the latter case, the net is trained afresh."
+		}
+	}
+	subflow{
+		heading2:"Train SVM"
+		textiter{
+			heading3:"Click on <font color=white>Train SVM</font> button on the right of the wizard"
+			text:""
+		}
+		textiter{
+			heading3:"Step 1 : Select SVM type and parameters"
+			text:"Select the type of SVM system to use (<b>LIBLINEAR</b> which provides linear kernel, <b>LIBSVM</b> which provides non-linear kernels). This selection dynamically determines the parameters to be provided. For linear kernel, only the parameter C needs to be provided. The only non-linear kernel currently supported is the RBF kernel, for which parameters C and gamma need to be provided."
+		}
+		textiter{
+			heading3:"Step 2 : Select training data"
+			text:"From the drop-down list titled <b>Training Blob</b>, select the training data.<br><font color=white>NOTE: The training data refers to features extracted using a pre-trained net. Note that these features have been explicitly moved previously so that they are visible in the data list above.</font>"
+		}
+		textiter{
+			heading3:"Step 3 : Enter name of trained model and start training"
+			text:"Enter the name by which you wish to refer to the trained model in the box titled <b>Model Name</b> and click the <b>Generate</b> button to start training."
+		}
+	}
+
+}
+
+flow{
+	heading1:"Net View"
+	subflow{
+		heading2:"default"
+		textiter{
+			heading3:"Step 1 : Create / Modify net"
+			text:"The first step is to decide whether you wish to (a) Create a new net from scratch (b) Create a net from existing configurations. For details of each procedure, select the appropriate option from the drop-down menu located above this wizard.<h4><font color=white>What is a 'configuration' ?</h4></font> A configuration contains three components -- train.prototxt, deploy.prototxt and auxilary settings -- whose presence depends on the context in which they are used. <br>Examples: <br> If the objective is to train a net, then only the train.prototxt and auxilary settings need to be present.<br> If the objective is to extract or visualize features, only the deploy.prototxt and auxilary settings need to be present. <font color=white><h4> What are auxilary settings ? </h4></font> These are optional settings such as raw scale (range of input features), mean path, channel swap and model path (path to pre-trained Caffe model containing weights)."
+		}
+		textiter{
+			heading3:"Step 2 : (Optional) Copy net"
+			text:"Once a net has been created/modified, it can be reused to create related nets. For instance, the deploy net is usually quite similar to train net. To avoid typing all over again, a copy of train net can be used to create a deploy net. For this, click on <b>Deploy Net</b> tab and then click on the yellow <b>Copy from Train Net</b> button towards the bottom right. A similar procedure can be used to copy the deploy net to create a train net (the active tab needs to be <b>Train Net</b>)."
+		}
+		textiter{
+			heading3:"Step 3 : (Optional) Add auxilary info"
+			text:"Once the train/deploy nets have been created, additional auxilary information can be added by clicking on <b>Other</b> tab located towards the top-right of the GUI."
+		}
+		textiter{
+			heading3:"Step 4 : Save net configuration"
+			text:"Finally, once the train and/or deploy and/or auxiliary info has all been added properly, the resulting configuration needs to be saved. To do so, enter a name for the net configuration in the textbox present towards the bottom-right of the GUI, titled <b>Save net configuration as </b> and click <b>Save</b>. The saved net configuration appears in a list box titled <b>Net Configurations</b> towards the bottom-left of the GUI.<br> Right-clicking on a net configuration also lets you view paths where files related to the net configuration (prototxt files etc.) are located. In addition, the right-click also lets you delete the configuration as well."
+		}
+	}	
+	subflow{
+		heading2:"Create a new net from scratch"
+		textiter{
+			heading3:"Determine net type"
+			text:"Depending on the requirement, either a training net or a deploy net can be created first. The default option is to create the training net first. If you wish to create a deploy net instead, click on the <b>Deploy Net</b> tab on the right."
+		}
+		textiter{
+			heading3:"Create net layers"
+			text:"Click on <b>Create New Net</b> button on the right side. A basic net architecture with 2 layers and default settings is displayed. <br><br> To edit the default settings or add/delete new layers, right-click on one of the existing layers and choose a menu option. If <b>Edit</b> or <b>Add new layer below</b> is selected, an edit textbox opens up. To find out how to enter details of each layer, select 'Editing net layers' option from the drop-down menu located above this wizard. <br><font color=white>NOTE-1</font><br><font color=white>NOTE: Our process of creating a net layer simultaneously provides dimensions of the layers.However, for certain kinds of layers such as merge-and-split, the dimension estimates will be incorrect. However, this does NOT affect the usability of the net in any way.</font>" 
+		}
+	}
+	subflow{
+		heading2:"Editing an existing net"
+		textiter{
+			heading3:"Determine net type"
+			text:"Depending on the requirement, either a training net or a deploy net can be loaded. The default option enables you to load the training net first. If you wish to load a deploy net instead, click on the <b>Deploy Net</b> tab on the right."
+		}
+		textiter{
+			heading3:"Load the net"
+			text: "Click on the button alongside <b>Load/Modify existing net configuration</b> text on the right side. Load a net file (.prototxt) using the file dialog menu. The loaded net is displayed along with important layer-wise information. The layers are color-coded by type (CONV,RELU,SOFTMAX etc.)<br><br>To edit the default settings or add/delete new layers, right-click on one of the existing layers and choose a menu option. If <b>Edit</b> or <b>Add new layer below</b> is selected, an edit textbox opens up. To find out how to enter details of each layer, select 'Editing net layers' option from the drop-down menu located above this wizard.<br><font color=white>NOTE: Our process of loading the net layers simultaneously provides dimensions of the layers.However, for certain kinds of layers such as merge-and-split, the dimension estimates will be incorrect. However, this does NOT affect the usability of the net in any way.</font>" 
+		}
+	}
+	subflow{
+		heading2:"Editing net layers"
+		textiter {
+			heading3:""
+			text: "To edit layer information or add a new layer, right-click on one of the existing net layers. Doing so opens a custom-designed 'smart' text editor. The left panel of the editor displays contextually relevant parameter settings and options based on the current nesting with a layer definition. These settings can be discovered either by placing the mouse cursor on an existing layer scope element (layer, transform param) or when you type the name of a new layer scope element.<br>The text you type is automatically saved when you close the text editor window."
+		}
+	}
+}
+
+

@@ -1,0 +1,9 @@
+  name: "data"
+  type: "HDF5Data"
+  top: "data"
+  top: "label"
+  hdf5_data_param {
+    source: "source.txt"
+    batch_size: 100
+  }
+  include: { phase: TRAIN }

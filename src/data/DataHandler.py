@@ -6,6 +6,7 @@ import scipy.misc
 import scipy.io as sio
 import readdb
 import os
+import shutil
 #import leveldB
 root=os.getenv('EXPRESSO_ROOT')
 
@@ -77,6 +78,13 @@ def leveldb2HDF5(name,sourceloc,destfolderloc,hasLabel=False,dimx=None,dimy=None
     readdb.leveldb2HDF5(str(name),str(sourceloc),str(destfolderloc))
 
 
+def HDF52HDF5(name,sourceloc,destfolderloc,hasLabel=False,dimx=227,dimy=227,dimz=3):
+    shutil.copy(sourceloc,destfolderloc+'/'+name+'.hdf5');
+
+
+
+
+
 def HDF52mat():
     pass
 
@@ -97,4 +105,6 @@ def exportAsMat(filename,hdf5name):
     print matDict['data'].shape
 
     sio.savemat(str(filename),matDict)
+
+
     handle.close()

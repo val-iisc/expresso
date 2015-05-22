@@ -16,7 +16,7 @@ from PyQt4 import QtCore, QtGui
 
 import os
 root = os.getenv('EXPRESSO_ROOT')
-
+ 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -86,7 +86,7 @@ class Ui_Form(QtGui.QWidget):
         self.label_4.setGeometry(QtCore.QRect(10, 170, 151, 71))
         self.label_4.setStyleSheet(_fromUtf8("font: 15pt \"Ubuntu Condensed\";color:rgb(45,60,45)"))
         self.label_4.setObjectName(_fromUtf8("label_3"))
-
+	self.widget_4.hide() #TO BE SHOWN LATER ON!!!
 
         self.widget_5 = QtGui.QWidget(Form)
         self.widget_5.setGeometry(QtCore.QRect(50, 270, 171, 241))
@@ -100,7 +100,6 @@ class Ui_Form(QtGui.QWidget):
         self.label_5.setStyleSheet(_fromUtf8("font: 15pt \"Ubuntu Condensed\";color:rgb(45,60,45)"))
         self.label_5.setObjectName(_fromUtf8("label_3"))
 
-	self.widget_4.hide() #To to decided(to remove or not)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -110,11 +109,11 @@ class Ui_Form(QtGui.QWidget):
         self.label.setText(_translate("Form", "Extract  Features\n"
 "via pre-trained net", None))
 	self.setPushButtonIcons()
-        self.label_2.setText(_translate("Form", "Visuallize deep\n"
+        self.label_2.setText(_translate("Form", "Visualize deep\n"
 "network Features", None))
 	self.label_3.setText(_translate("Form", "Evaluate \n"
 "pre-trained Net", None))
-	self.label_4.setText(_translate("Form", "Model Weight \n"
+	self.label_4.setText(_translate("Form", "Dense CRF \n"
 "Surgery", None))
 	self.label_5.setText(_translate("Form", "Evaluate  \n"
 "pre-trained SVM", None))

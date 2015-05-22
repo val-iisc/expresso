@@ -40,6 +40,8 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_Form(QtGui.QWidget):
+    signalRefreshTrigger=QtCore.pyqtSignal(object)
+    signalUpdateTrigger=QtCore.pyqtSignal(object)
     signalCompleteTrigger=QtCore.pyqtSignal(object)
     signalStartedTrigger=QtCore.pyqtSignal(object)
     def __init__(self,parent=None):
@@ -49,26 +51,26 @@ class Ui_Form(QtGui.QWidget):
     def setupUi(self, Form):
         Form.setObjectName(_fromUtf8("Form"))
         Form.resize(611, 591)
-        Form.setStyleSheet(_fromUtf8("background-color:rgb(195,195,135)"))
+        Form.setStyleSheet(_fromUtf8("background-color:rgb(150,150,90)"))
         self.labelTraining = QtGui.QLabel(Form)
         self.labelTraining.setGeometry(QtCore.QRect(49, 159, 241, 17))
-        self.labelTraining.setStyleSheet(_fromUtf8("font:italic 15pt  \"Ubuntu Condensed\";color:rgb(45,60,45)"))
+        self.labelTraining.setStyleSheet(_fromUtf8("font:italic 15pt  \"Ubuntu Condensed\";color:rgb(60,60,45);selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);"))
         self.labelTraining.setObjectName(_fromUtf8("labelTraining"))
         self.comboBoxTesting = QtGui.QComboBox(Form)
         self.comboBoxTesting.setGeometry(QtCore.QRect(300, 111, 198, 31))
-        self.comboBoxTesting.setStyleSheet(_fromUtf8("font: 18 pt \"Ubuntu Condensed\";color:rgb(45,60,45);background-color:rgb(210,225,210)"))
+        self.comboBoxTesting.setStyleSheet(_fromUtf8("font: 18 pt \"Ubuntu Condensed\";color:rgb(60,60,45);background-color:rgba(255,255,255,175);selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);"))
         self.comboBoxTesting.setObjectName(_fromUtf8("comboBoxTesting"))
         self.label_7 = QtGui.QLabel(Form)
         self.label_7.setGeometry(QtCore.QRect(50, 110, 215, 33))
-        self.label_7.setStyleSheet(_fromUtf8("font: 21pt \"Ubuntu Condensed\";color:rgb(210,225,210)"))
+        self.label_7.setStyleSheet(_fromUtf8("font: 21pt \"Ubuntu Condensed\";color:rgb(255,255,225)"))
         self.label_7.setObjectName(_fromUtf8("label_7"))
         self.widget_4 = QtGui.QWidget(Form)
         self.widget_4.setGeometry(QtCore.QRect(20, 210, 551, 80))
-        self.widget_4.setStyleSheet(_fromUtf8("background-color:rgb(175,225,175)"))
+        self.widget_4.setStyleSheet(_fromUtf8("background-color:rgba(255,255,255,100);"))
         self.widget_4.setObjectName(_fromUtf8("widget_4"))
         self.widget_5 = QtGui.QWidget(self.widget_4)
         self.widget_5.setGeometry(QtCore.QRect(20, 20, 381, 41))
-        self.widget_5.setStyleSheet(_fromUtf8("background-color:rgb(210,240,210)"))
+        self.widget_5.setStyleSheet(_fromUtf8("background-color:rgba(255,255,255,100)"))
         self.widget_5.setObjectName(_fromUtf8("widget_5"))
         self.label_8 = QtGui.QLabel(self.widget_5)
         self.label_8.setGeometry(QtCore.QRect(10, 14, 121, 17))
@@ -76,7 +78,7 @@ class Ui_Form(QtGui.QWidget):
         self.label_8.setObjectName(_fromUtf8("label_8"))
         self.comboBox = QtGui.QComboBox(self.widget_5)
         self.comboBox.setGeometry(QtCore.QRect(150, 5, 221, 31))
-        self.comboBox.setStyleSheet(_fromUtf8("background-color:rgb(255,255,255)"))
+        self.comboBox.setStyleSheet(_fromUtf8("background-color:rgb(255,255,255);selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);"))
         self.comboBox.setObjectName(_fromUtf8("comboBox"))
         self.pushButton = QtGui.QPushButton(self.widget_4)
         self.pushButton.setGeometry(QtCore.QRect(420, 20, 98, 41))
@@ -97,16 +99,30 @@ class Ui_Form(QtGui.QWidget):
     def retranslateUi(self, Form):
         Form.setWindowTitle(_translate("Form", "Form", None))
         self.labelTraining.setText(_translate("Form", "Dimentions are b x c x h x w", None))
+	self.labelTraining.hide()
         self.label_7.setText(_translate("Form", "Testing Blob              ", None))
         self.label_8.setText(_translate("Form", "Model Name", None))
-        self.pushButton.setText(_translate("Form", "Generate", None))
+        self.pushButton.setText(_translate("Form", "Evaluate", None))
         self.label_9.setText(_translate("Form", "SVM Testing", None))
         self.textEdit.setHtml(_translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Ubuntu Condensed\'; font-size:15pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Ubuntu\'; font-size:14pt;\">Model Dimensions :10,000 x200</span></p></body></html>", None))
+	self.textEdit.hide()
 	self.initiallize()
+	#Added on 15th May
+	self.labelName=QtGui.QLabel(Form)
+        self.labelName.setGeometry(QtCore.QRect(40, 420, 90, 34))
+        self.labelName.setStyleSheet(_fromUtf8("font: 18pt \"Ubuntu Condensed\";color:rgb(230,240,210);"))
+	self.labelName.setText('Accuracy')
+        self.lineEditName = QtGui.QLineEdit(Form)
+        self.lineEditName.setGeometry(QtCore.QRect(135, 420, 180, 34))
+        self.lineEditName.setStyleSheet(_fromUtf8("font: 14pt \"Ubuntu Condensed\";background-color:rgb(230,240,210);color:rgb(120,120,75);"))
+        self.lineEditName.setObjectName(_fromUtf8("lineEditName"))
+	self.lineEditName.setReadOnly(True)
+	self.signalUpdateTrigger.connect(self.lineEditName.setText)
+	#End of 15th May
 	self.pushButton.clicked.connect(self.onSubmitClickedSlot)
 
     def initiallize(self):
@@ -157,10 +173,10 @@ class Ui_Form(QtGui.QWidget):
                     self.appendData(modelName,dataName,testx,testy)
                     break;
                 #If ends
-                row=np.array(f['data'][idx],dtype=np.float32).flatten().tolist()
+                row=np.array(f['data'][batchIdx+idx],dtype=np.float32).flatten().tolist()
                 row=dict(zip(range(1,len(row)+1),row))
                 testx.append(row)
-                row=np.array(f['label'][idx],dtype=np.float32).flatten().tolist()[0]
+                row=np.array(f['label'][batchIdx+idx],dtype=np.float32).flatten().tolist()[0]
             #row=dict(zip(range(len(row)),row))
                 testy.append(row)
             self.appendData(modelName,dataName,testx,testy)
@@ -174,8 +190,10 @@ class Ui_Form(QtGui.QWidget):
 
                 execpath=root+'/tools/libsvm-3.20'
 
+		# svm-scale -r scaling-param-file-created-during-training test-features-file > scaled-test-features-file
+		# predict -c C test-features-file trainining-model predicted-file
 
-                f.write(execpath+'/svm-scale -s scaling_parameters '+testpath+' > '+testpath+'_scaled\n')
+                f.write(execpath+'/svm-scale -r '+modelpath+'.range '+testpath+' > '+testpath+'_scaled\n')
                 f.write(execpath+'/svm-predict '+testpath+'_scaled '+modelpath+'.model '+testpath+'.predict >'+testpath+'_out\n')
 		#print open(testpath+'_out').read()
                 f.close()
@@ -187,7 +205,7 @@ class Ui_Form(QtGui.QWidget):
                 execpath=root+'/tools/liblinear-1.96'
                 execpathold=root+'/tools/libsvm-3.20'
 
-		f.write(execpathold+'/svm-scale -s scaling_parameters '+testpath+' > '+testpath+'_scaled\n')
+                f.write(execpathold+'/svm-scale -r '+modelpath+'.range '+testpath+' > '+testpath+'_scaled\n')
                 f.write(execpath+'/predict '+testpath+'_scaled '+modelpath+'.model '+testpath+'.predict >'+testpath+'_out\n')
 		#print open(testpath+'_out').read()
                 f.close()
@@ -200,7 +218,9 @@ class Ui_Form(QtGui.QWidget):
         p.start()
         p.join()
         sleep(0.5)
-        print open(folderpath+'/test/'+dataName+'_out').read()
+        accuracyVal=open(folderpath+'/test/'+dataName+'_out').read()
+	accuracyVal=accuracyVal.split('Accuracy = ')[-1]
+	self.signalUpdateTrigger.emit(accuracyVal)
         triggerList[4]=open(folderpath+'/test/'+dataName+'_out').read()
         self.endTrigger(triggerList) #====>End
         ##########################################
@@ -216,7 +236,7 @@ class Ui_Form(QtGui.QWidget):
         #print trainy,'TRAINY' 
         writebuf='';
         for i in range(len(trainy)):
-            writebuf=writebuf+str(trainy[i])+' '+str(trainx[i]).replace(',','').replace(': ',':').replace('{','').replace('}','\n')
+            writebuf=writebuf+str(int(trainy[i]))+' '+str(trainx[i]).replace(',','').replace(': ',':').replace('{','').replace('}','\n')
 
         open(root+'/net/SVM/'+filename+'/test/'+dataName,'a').write(writebuf)
 
@@ -254,7 +274,6 @@ class Ui_Form(QtGui.QWidget):
         self.signalCompleteTrigger.emit(triggerList)
 
 
-  
 
 
 

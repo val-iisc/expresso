@@ -45,17 +45,14 @@ class NetHandler:
 
     def updateNet(self):
         channel_swap=(2,1,0) if self.currentNet.channel_swap else None
-        self.net=caffe.Classifier(str(self.currentNet.protopath),str(self.currentNet.modelpath),mean=np.load(str(self.currentNet.meanpath)),gpu=False,raw_scale=int(self.currentNet.raw_scale),channel_swap=channel_swap)
+        self.net=caffe.Classifier(str(self.currentNet.protopath),str(self.currentNet.modelpath),mean=np.load(str(self.currentNet.meanpath)),raw_scale=int(self.currentNet.raw_scale),channel_swap=channel_swap)
 
     def operate(self):
       # Load Data
         name=root+'/data/'+self.dataName +'.hdf5'
-        print name
         self.opData=h5py.File(name,'r')
         self.batchSize=int(self.batchSize) if self.batchSize!='' else 50
 
-        print 'data shape : ',self.opData['data'].shape
-        print 'batch size : ',self.batchSize
         self.batchSize=10;
         out=[]
         #data=self.net.preprocess('data',np.array(self.opData['data']))
@@ -66,18 +63,26 @@ class NetHandler:
         else:
             self.data['data']=np.array(self.opData['data'])
 
+	################ REAL OPERATION  ################
+
         for i in range(self.data['data'].shape[0]//self.batchSize):
             out[i*self.batchSize:(i+1)*self.batchSize]=self.net.forward_all(**{'data':self.data['data'][i*self.batchSize:(i+1)*self.batchSize]}).values()[0]
-        print len(out)
         out[len(out):self.data['data'].shape[0]]=self.net.forward_all(**{'data':self.data['data'][len(out):self.data['data'].shape[0]]}).values()[0]
 
-        print np.array(out).shape
-        print np.amax(np.array(out))
         return out
 
     #Fills the restricted net into tempHandler
     def fillNet(self,handle,layername):
         tick=False
+        for idx,layers in enumerate(handle.layer):
+            if(tick==True):
+                print layers.name,'deleted'
+                del self.tempHandler.layer[-1]
+            if(layers.name==layername):tick=True
+        print self.tempHandler
+
+
+	### Old Version
         for idx,layers in enumerate(handle.layers):
             if(tick==True):
                 print layers.name,'deleted'
@@ -103,9 +108,9 @@ class NetHandler:
             channel_swap=(2,1,0) if self.currentNet.channel_swap else None
 	    
 	    if(self.currentNet.HasField('meanpath') and self.currentNet.meanpath!=''):
-                self.net=caffe.Classifier(str(savename),str(self.currentNet.modelpath),gpu=False,mean=np.load(str(self.currentNet.meanpath)),raw_scale=int(self.currentNet.raw_scale),channel_swap=channel_swap)
+                self.net=caffe.Classifier(str(savename),str(self.currentNet.modelpath),mean=np.load(str(self.currentNet.meanpath)),raw_scale=int(self.currentNet.raw_scale),channel_swap=channel_swap)
 	    else:
-	        self.net=caffe.Classifier(str(savename),str(self.currentNet.modelpath),gpu=False,raw_scale=int(self.currentNet.raw_scale),channel_swap=channel_swap)
+	        self.net=caffe.Classifier(str(savename),str(self.currentNet.modelpath),raw_scale=int(self.currentNet.raw_scale),channel_swap=channel_swap)
 
 
             data=self.operate()
@@ -113,6 +118,10 @@ class NetHandler:
             # Data=data, key=self.listWidgetNetList.item(i).text()
             # Name is self.lineEditName.text()
             comp_kwargs = {'compression': 'gzip', 'compression_opts': 1}
+	    data=np.array(data);
+	    if(len(data.shape)==2):data=np.reshape(data,[data.shape[0],data.shape[1],1,1]) 
+	    #MAKE A DESIGN CHOICE LATER, whether to keep it here or in dataview
+
             self.fileHandle.create_dataset(elem,data=data,**comp_kwargs)
 
         self.opData=h5py.File(root+'/data/'+self.dataName +'.hdf5','r')

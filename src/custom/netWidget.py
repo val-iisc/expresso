@@ -64,6 +64,7 @@ class MyForm(QtGui.QWidget):
         self.treeWidget.setObjectName(_fromUtf8("treeWidget"))
         self.treeWidget.headerItem().setText(0, _fromUtf8("1"))
         #Jaley Start
+	self.dim=[100,3,227,227]
         self.treeWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.treeWidget.customContextMenuRequested.connect(self.myContextMenu)
 	self.treeWidget.header().setStyleSheet("font:12pt")
@@ -72,6 +73,7 @@ class MyForm(QtGui.QWidget):
         self.textEdit = QtGui.QTextEdit(Form)
         self.textEdit.setGeometry(QtCore.QRect(10, 90, 611, 591))
         self.textEdit.setObjectName(_fromUtf8("textEdit"))
+
 	self.isNewLayer=False
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -108,17 +110,17 @@ class MyForm(QtGui.QWidget):
 	#Step 1: Assign Net Parameter
 	c=caffe_pb2.NetParameter()
 	text_format.Merge(data,c)
-	for idx in range(len(c.layers)):handle.layers.add()
+	for idx in range(len(c.layer)):handle.layer.add()
 	#Step 2:
-	length=len(handle.layers)
+	length=len(handle.layer)
 
 	for idx in range(length-1,pos-1,-1):
 	    h=caffe_pb2.LayerParameter()
-	    text_format.Merge(handle.layers[idx-len(c.layers)].__str__(),h)
-	    handle.layers[idx].CopyFrom(h)
+	    text_format.Merge(handle.layer[idx-len(c.layer)].__str__(),h)
+	    handle.layer[idx].CopyFrom(h)
 
-	for idx in range(pos,pos+len(c.layers)):
-	    handle.layers[idx].CopyFrom(c.layers[idx-pos])
+	for idx in range(pos,pos+len(c.layer)):
+	    handle.layer[idx].CopyFrom(c.layer[idx-pos])
 
 
 
@@ -131,7 +133,7 @@ class MyForm(QtGui.QWidget):
             #self.lineEditSavePath.setText(self.newWidget.toPlainText())
             self.layerhandler=caffe_pb2.NetParameter();
             #print self.newWidget.toPlainText()
-	    if(self.isNewLayer==True):
+	    if(self.isNewLayer==True and self.newWidget.isSubmitted==True):
             	text_format.Merge(self.newWidget.textEdit.toPlainText().__str__(),self.layerhandler)
 	    	self.textEdit.setText(str(self.protohandler))
 		self.insertLayer(self.protohandler,self.treeWidget.currentIndex().row(),self.layerhandler.__str__())
@@ -141,8 +143,9 @@ class MyForm(QtGui.QWidget):
 		self.loadTreeWidget()
 		self.isNewLayer=False
 	    else:
+		if(self.newWidget.isSubmitted==False):return
 		text_format.Merge(self.newWidget.textEdit.toPlainText().__str__(),self.layerhandler)
-		self.protohandler.layers[self.treeWidget.currentIndex().row()-1].CopyFrom(self.layerhandler.layers[0]);
+		self.protohandler.layer[self.treeWidget.currentIndex().row()-1].CopyFrom(self.layerhandler.layer[0]);
             	self.textEdit.setText(str(self.protohandler))
            	self.loadTreeWidget()
 
@@ -178,8 +181,11 @@ class MyForm(QtGui.QWidget):
        	if(self.trainMode==True):
 	    if(self.index!=None):    
 	        self.loadpath=self.netHandler.net[index].trainpath
+		self.dim=[self.netHandler.net[index].tdim0,self.netHandler.net[index].tdim1,self.netHandler.net[index].tdim2,self.netHandler.net[index].tdim3];
 	    else:
 		self.loadpath=root+'/src/custom/'+'defaultTrain.prototxt'
+		self.dim=[100,3,227,227];
+
 	else:
 	    if(self.index!=None):    
 	    	self.loadpath=self.netHandler.net[index].protopath
@@ -220,7 +226,7 @@ class MyForm(QtGui.QWidget):
 
 	self.newWidget=layerView.Ui_Form()
         #self.newWidget=QtGui.QTextEdit()
-        self.newWidget.textEdit.setText('layers{\nbottom:\"'+self.treeWidget.currentItem().text(0).__str__().strip().split()[-1]+'\"\n}')
+        self.newWidget.textEdit.setText('layer{\nbottom:\"'+self.treeWidget.currentItem().text(0).__str__().strip().split()[-1]+'\"\n}')
         self.newWidget.setStyleSheet("background-color:rgb(115,115,115)")
         globalpnt=self.newWidget.mapToGlobal(self.positionval)
         print self.positionval.y(),self.positionval.x()
@@ -234,7 +240,7 @@ class MyForm(QtGui.QWidget):
 	
 
     def deleteLayer(self):
-	del self.protohandler.layers[self.treeWidget.currentIndex().row()-1]
+	del self.protohandler.layer[self.treeWidget.currentIndex().row()-1]
         self.textEdit.setText(str(self.protohandler))
         self.loadTreeWidget()
 
@@ -252,7 +258,7 @@ class MyForm(QtGui.QWidget):
 
 	#===== END OF INTERFACING ==
         self.newWidget=layerView.Ui_Form()
-        self.newWidget.textEdit.setText('layers{\n'+self.loadCurrentData()+'\n}')
+        self.newWidget.textEdit.setText('layer{\n'+self.loadCurrentData()+'\n}')
 	self.newWidget.setStyleSheet("background-color:rgb(115,115,115);")
         globalpnt=self.newWidget.mapToGlobal(self.positionval)
         print self.positionval.y(),self.positionval.x()
@@ -289,25 +295,114 @@ class MyForm(QtGui.QWidget):
             l.append(layername)
         else:
 	    layername=QtGui.QTreeWidgetItem()
-	    if(dim!=None and len(dim)==4):
-		layername.setText(0,'Data')
-		layername.setText(2,str(dim[0]))
-		layername.setText(3,str(dim[1]))
-		layername.setText(4,str(dim[2]))
-		layername.setText(5,str(dim[3]))
-		
-            else:
-	        layername.setText(0,'Data')
-                layername.setText(2,str(100))
-                layername.setText(3,str(3))
-                layername.setText(4,str(277))
-                layername.setText(5,str(227))
+	    layername.setText(0,'Data')
+            layername.setText(2,str(self.dim[0]))
+            layername.setText(3,str(self.dim[1]))
+            layername.setText(4,str(self.dim[2]))
+            layername.setText(5,str(self.dim[3]))
 	    layername.setFlags(QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEditable)
             l.append(layername)
      
 	idx=1
         #First Layer Ends
 	
+        #text_format.Merge(str(self.textEdit.toPlainText()),self.protohandler)
+        for layer in self.protohandler.layer:
+            if self.layerlist!=None:
+	        if layer.name not in self.layerlist:continue
+            layername=QtGui.QTreeWidgetItem()
+            layername.setFlags(QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
+
+            layername.setText(0,str(idx)+'\t'+layer.name)
+            idx=idx+1;
+            #Adding Static Params
+            top=QtGui.QTreeWidgetItem()
+            top.setText(0,'top')
+            toplist=[];
+            for name in layer.top:
+                topelem=QtGui.QTreeWidgetItem()
+                topelem.setFlags(topelem.flags()& ~QtCore.Qt.ItemIsEnabled )
+                topelem.setText(0,name)
+                toplist.append(topelem)
+            top.addChildren(toplist)
+            top.setFlags(top.flags()& ~QtCore.Qt.ItemIsEnabled )
+
+            layername.addChild(top)
+
+            bottom=QtGui.QTreeWidgetItem()
+            bottom.setText(0,'bottom')
+            bottomlist=[];
+            for name in layer.bottom:
+                bottomelem=QtGui.QTreeWidgetItem()
+                bottomelem.setFlags(bottomelem.flags()& ~QtCore.Qt.ItemIsEnabled )
+                bottomelem.setText(0,name)
+                bottomlist.append(bottomelem)
+            bottom.addChildren(bottomlist)
+            bottom.setFlags(layername.flags()& ~QtCore.Qt.ItemIsEnabled )
+
+            layername.addChild(bottom)
+
+            layername.setForeground(1,QtGui.QBrush(QtCore.Qt.white))
+            layername.setBackground(1,QtGui.QBrush(QtGui.QColor(45,60,45))) #Text is Red
+
+            layername.addChildren
+            #Adding Dynamic Params
+            if(layer.type=="Convolution"):        #CONV
+                layername.setText(1,'CONV')
+                layername.setBackground(0,QtGui.QBrush(QtGui.QColor(180,180,150)))
+                layername.setBackground(1,QtGui.QBrush(QtGui.QColor(135,135,120)))
+		for i in range(4):layername.setBackground(2+i,QtGui.QBrush(QtGui.QColor(180,180,150)))
+
+                self.paramiter(layer.convolution_param,layername,l)
+            elif(layer.type=="Pooling"):       #POOL
+                layername.setText(1,'POOL')
+                layername.setBackground(0,QtGui.QBrush(QtGui.QColor(120,150,120)))
+                layername.setBackground(1,QtGui.QBrush(QtGui.QColor(60,90,60)))
+		for i in range(4):layername.setBackground(2+i,QtGui.QBrush(QtGui.QColor(120,150,120)))
+
+                self.paramiter(layer.pooling_param,layername,l)
+            elif(layer.type=="InnerProduct"):       #IP
+                layername.setText(1,'IP')
+                layername.setBackground(0,QtGui.QBrush(QtGui.QColor(210,225,150)))
+                layername.setBackground(1,QtGui.QBrush(QtGui.QColor(135,150,90)))
+		for i in range(4):layername.setBackground(2+i,QtGui.QBrush(QtGui.QColor(210,225,150)))
+
+
+                self.paramiter(layer.inner_product_param,layername,l)
+                layername.setText(2,l[len(l)-1].text(2))
+                layername.setText(3,str(layer.inner_product_param.num_output))
+                layername.setText(4,'1')
+                layername.setText(5,'1')
+            elif(layer.type=="ReLu"):       #RELU
+                layername.setText(1,'RELU')
+                layername.setBackground(0,QtGui.QBrush(QtGui.QColor(150,180,165)))
+                layername.setBackground(1,QtGui.QBrush(QtGui.QColor(90,108,99)))
+		for i in range(4):layername.setBackground(2+i,QtGui.QBrush(QtGui.QColor(150,180,165)))
+
+                self.getDim(l,layername)
+                self.paramiter(layer.relu_param,layername,l)
+            elif(layer.type=="Softmax"):       #SOFTMAX
+                layername.setText(1,'SOFTMAX')
+		layername.setBackground(0,QtGui.QBrush(QtGui.QColor(75,90,75)))
+                layername.setBackground(1,QtGui.QBrush(QtGui.QColor(45,60,45)))
+		for i in range(4):layername.setBackground(2+i,QtGui.QBrush(QtGui.QColor(75,90,75)))
+
+
+
+                layername.setForeground(0,QtGui.QBrush(QtCore.Qt.white))
+                layername.setForeground(1,QtGui.QBrush(QtCore.Qt.white))
+                for i in range(4): layername.setForeground(2+i,QtGui.QBrush(QtCore.Qt.white))
+
+                self.getDim(l,layername)
+                self.paramiter(layer.softmax_param,layername,l)
+            else:
+                layername.setText(1,'OTHER')
+                self.getDim(l,layername)
+
+            l.append(layername)
+
+        #### OLD VERSION STARTS
+
         #text_format.Merge(str(self.textEdit.toPlainText()),self.protohandler)
         for layer in self.protohandler.layers:
             if self.layerlist!=None:
@@ -403,6 +498,11 @@ class MyForm(QtGui.QWidget):
 
             l.append(layername)
 
+
+
+
+	#### OLD VERSION ENDS
+
         self.treeWidget.addTopLevelItems(l)
 
     def paramiter(self,handle,layername,l):
@@ -448,25 +548,28 @@ class MyForm(QtGui.QWidget):
             self.textEdit.setVisible(True)
             return
     def loadCurrentData(self):
-        return self.protohandler.layers[self.treeWidget.currentIndex().row()-1].__str__()
+        return self.protohandler.layer[self.treeWidget.currentIndex().row()-1].__str__()
     def setCurrentData(self):
         pass
     def onItemChangedSlot(self):
 	if(self.trainMode==False):
-	    self.protohandler.input_dim[0]=int(self.treeWidget.currentItem().text(2))
-	    self.protohandler.input_dim[1]=int(self.treeWidget.currentItem().text(3))
-	    self.protohandler.input_dim[2]=int(self.treeWidget.currentItem().text(4))
-	    self.protohandler.input_dim[3]=int(self.treeWidget.currentItem().text(5))
+	    self.protohandler.input_dim[0]=int(str(self.treeWidget.currentItem().text(2)))
+	    self.protohandler.input_dim[1]=int(str(self.treeWidget.currentItem().text(3)))
+	    self.protohandler.input_dim[2]=int(str(self.treeWidget.currentItem().text(4)))
+	    self.protohandler.input_dim[3]=int(str(self.treeWidget.currentItem().text(5)))
 	    self.textEdit.setText(self.protohandler.__str__())
 	    self.loadTreeWidget()
 
 	else:
-	    dim=[self.treeWidget.currentItem().text(2),\
-	    self.treeWidget.currentItem().text(3),\
-	    self.treeWidget.currentItem().text(4),\
-	    self.treeWidget.currentItem().text(5)]
+
+	    self.dim=[int(str(self.treeWidget.currentItem().text(2))),\
+	    int(str(self.treeWidget.currentItem().text(3))),\
+	    int(str(self.treeWidget.currentItem().text(4))),\
+	    int(str(self.treeWidget.currentItem().text(5)))]
 	    self.textEdit.setText(self.protohandler.__str__())
-	    self.loadTreeWidget(dim)
+   
+ 
+	    self.loadTreeWidget()
 
 if __name__== "__main__":
     import sys

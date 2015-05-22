@@ -39,6 +39,7 @@ except AttributeError:
 
 class Ui_Form(QtGui.QWidget):
     signalCompleteTrigger=QtCore.pyqtSignal(object)
+    signalRefreshTrigger=QtCore.pyqtSignal(object)
     signalStartedTrigger=QtCore.pyqtSignal(object) 
     def __init__(self,parent=None):
         super(Ui_Form,self).__init__(parent)
@@ -50,7 +51,7 @@ class Ui_Form(QtGui.QWidget):
         Form.setStyleSheet(_fromUtf8("background-color:rgb(120,180,120)"))
         self.comboBox = QtGui.QComboBox(Form)
         self.comboBox.setGeometry(QtCore.QRect(20, 40, 161, 31))
-        self.comboBox.setStyleSheet(_fromUtf8("background-color:rgb(210,240,210)"))
+        self.comboBox.setStyleSheet(_fromUtf8("background-color:rgb(210,240,210);selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);"))
         self.comboBox.setObjectName(_fromUtf8("comboBox"))
         self.stackedWidget = QtGui.QStackedWidget(Form)
         self.stackedWidget.setGeometry(QtCore.QRect(20, 100, 551, 151))
@@ -112,7 +113,7 @@ class Ui_Form(QtGui.QWidget):
         self.labelTraining.setObjectName(_fromUtf8("labelTraining"))
         self.comboBoxTraining = QtGui.QComboBox(Form)
         self.comboBoxTraining.setGeometry(QtCore.QRect(300, 291, 198, 31))
-        self.comboBoxTraining.setStyleSheet(_fromUtf8("font: 18 pt \"Ubuntu Condensed\";color:rgb(45,60,45);background-color:rgb(210,225,210)"))
+        self.comboBoxTraining.setStyleSheet(_fromUtf8("font: 18 pt \"Ubuntu Condensed\";color:rgb(45,60,45);background-color:rgb(210,225,210);selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);"))
         self.comboBoxTraining.setObjectName(_fromUtf8("comboBoxTraining"))
         self.label_7 = QtGui.QLabel(Form)
         self.label_7.setGeometry(QtCore.QRect(50, 290, 215, 33))
@@ -187,8 +188,6 @@ class Ui_Form(QtGui.QWidget):
 	choice=self.comboBox.currentIndex()
 	name=str(self.lineEdit_5.text())
 	dataName=str(self.comboBoxTraining.currentText());
-	print name
-	print 'Submit Clicked'
 	paramstring=''
 	cl=str(self.lineEdit.text())#C for liblinear
 	cs=str(self.lineEdit_2.text()) # C for libSVM
@@ -231,18 +230,13 @@ class Ui_Form(QtGui.QWidget):
 		    self.appendData(name,trainx,trainy)
 		    break;
 		#If ends
-	        row=np.array(f['data'][idx],dtype=np.float32).flatten().tolist()
+	        row=np.array(f['data'][batchIdx+idx],dtype=np.float32).flatten().tolist()
 	        row=dict(zip(range(1,len(row)+1),row))
 	        trainx.append(row)
-	        row=np.array(f['label'][idx],dtype=np.float32).flatten().tolist()[0]
+	        row=int(np.array(f['label'][batchIdx+idx],dtype=np.float32).flatten().tolist()[0])
 	    #row=dict(zip(range(len(row)),row))
 	        trainy.append(row)
 	    self.appendData(name,trainx,trainy)
-
-	#print 'train',trainx[:1]
-	#print 'label',trainy[:1]
-	
-
 	if(choice==1): 	    	
 	    #model=svmutil.svm_train(trainy,trainx,'-c 4')
 	    with open(root+'/net/SVM/'+name+'/'+name+'.sh','w') as f:
@@ -260,7 +254,7 @@ class Ui_Form(QtGui.QWidget):
 		execpath=root+'/tools/liblinear-1.96'
 		execpathold=root+'/tools/libsvm-3.20'
 	
-		f.write(execpathold+'/svm-scale -s scaling_parameters '+trainpath+' > '+trainpath+'_scaled\n')
+		f.write(execpathold+'/svm-scale -s '+trainpath+'.range '+trainpath+' > '+trainpath+'_scaled\n')
 		f.write(execpath+'/train '+paramstring+' '+trainpath+'_scaled '+trainpath+'.model >'+trainpath+'_out\n')
 		f.close()
 
@@ -271,8 +265,6 @@ class Ui_Form(QtGui.QWidget):
 	p.start()
 	p.join()
 	sleep(0.5)
-	print open(folderpath+'/'+name+'_out').read() 
-
 	triggerList[4]=open(folderpath+'/'+name+'_out').read()
         self.endTrigger(triggerList) #====>End
 	##########################################
@@ -286,8 +278,7 @@ class Ui_Form(QtGui.QWidget):
 	#print trainy,'TRAINY' 
 	writebuf='';
 	for i in range(len(trainy)):
-	    writebuf=writebuf+str(trainy[i])+' '+str(trainx[i]).replace(',','').replace(': ',':').replace('{','').replace('}','\n')
-
+	    writebuf=writebuf+str(int(trainy[i]))+' '+str(trainx[i]).replace(',','').replace(': ',':').replace('{','').replace('}','\n')
 	open(root+'/net/SVM/'+filename+'/'+filename,'a').write(writebuf)
 	
 	pass
@@ -307,17 +298,16 @@ class Ui_Form(QtGui.QWidget):
         triggerList[4].replace('started','completed')
         triggerList[5]=100
         self.signalCompleteTrigger.emit(triggerList)
+	self.signalRefreshTrigger.emit(triggerList[4])
 
 
     def startTrigger(self,triggerList):
-        print triggerList
         self.signalStartedTrigger.emit(triggerList)
         print '############## Start Emitted  ###########'
         return triggerList
 
     def callback(self,name,folderpath):
 	#Call the subprocess accordingly
-	print 'Work in progress'
         subprocess.call(['sh',folderpath+'/'+name+'.sh'])
 
 

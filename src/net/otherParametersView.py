@@ -71,6 +71,16 @@ class Ui_Form(QtGui.QWidget):
         self.checkBoxUseGPU = QtGui.QCheckBox(Form)
         self.checkBoxUseGPU.setGeometry(QtCore.QRect(280, 150, 91, 22))
         self.checkBoxUseGPU.setStyleSheet(_fromUtf8("font: 16pt \"Ubuntu Condensed\";color:rgb(50, 165, 211)"))
+	self.lineEditGPUIndex=QtGui.QLineEdit(Form)
+	self.lineEditGPUIndex.setGeometry(QtCore.QRect(410,210,75,27))
+	self.lineEditGPUIndex.setStyleSheet('background-color:rgb(210, 225, 210);');
+	self.lineEditGPUIndex.setText('0');
+	self.lineEditGPUIndex.hide()
+	self.labelUseGPUIndex=QtGui.QLabel(Form)
+	self.labelUseGPUIndex.setGeometry(QtCore.QRect(300,210,100,27))
+	self.labelUseGPUIndex.setText('GPU Index')
+	self.labelUseGPUIndex.setStyleSheet('color:rgb(50, 165, 211);font: 16pt \"Ubuntu Condensed\";');
+	self.labelUseGPUIndex.hide()
         self.checkBoxUseGPU.setObjectName(_fromUtf8("checkBoxUseGPU"))
         self.checkBoxChannelSwap = QtGui.QCheckBox(Form)
         self.checkBoxChannelSwap.setGeometry(QtCore.QRect(390, 150, 141, 22))
@@ -96,6 +106,7 @@ class Ui_Form(QtGui.QWidget):
         self.lineEditRawScale = QtGui.QLineEdit(self.layoutWidget)
         self.lineEditRawScale.setStyleSheet(_fromUtf8("font: 11pt \"Ubuntu Condensed\";background-color:rgb(210, 225, 210)"))
         self.lineEditRawScale.setObjectName(_fromUtf8("lineEditRawScale"))
+	self.lineEditRawScale.setText('255')
         self.horizontalLayout_9.addWidget(self.lineEditRawScale)
         self.label_9 = QtGui.QLabel(Form)
         self.label_9.setGeometry(QtCore.QRect(40, 100, 101, 21))
@@ -147,6 +158,9 @@ class Ui_Form(QtGui.QWidget):
         self.label_15.setText(_translate("Form", "Add New Model", None))
 	self.label_15.hide()
         self.checkBoxUseGPU.setText(_translate("Form", "use gpu", None))
+	#self.checkBoxUseGPU.hide()#Changed Format is autodoing things
+
+
         self.checkBoxChannelSwap.setText(_translate("Form", "channel swap", None))
         self.label_10.setText(_translate("Form", "Raw Scale       ", None))
         self.label_9.setText(_translate("Form", "Mean Path", None))
@@ -156,12 +170,18 @@ class Ui_Form(QtGui.QWidget):
 	self.pushButtonModelUpload.clicked.connect(self.onModelUploadButtonClickedSlot)
 	self.pushButtonMeanUpload.clicked.connect(self.onUploadButtonClickedSlot)
 	self.lineEditModelPath.hide()
+	self.checkBoxUseGPU.stateChanged.connect(self.showhideGPUIndex)
 
     def clearFields(self):
 	self.checkBoxHasMean.setCheckState(QtCore.Qt.Unchecked)
+	self.checkBoxUseGPU.setCheckState(QtCore.Qt.Unchecked)
+	self.checkBoxChannelSwap.setCheckState(QtCore.Qt.Unchecked)
 	self.lineEditModelPath.setText('')
-	self.lineEditRawScale.setText('')
+	self.lineEditRawScale.setText('255')
 	self.lineEditMeanPath.setText('')
+	self.labelUseGPUIndex.hide()
+	self.lineEditGPUIndex.hide()
+
 
     def onModelUploadButtonClickedSlot(self):
 	print 'clicked Upload'
@@ -207,8 +227,13 @@ class Ui_Form(QtGui.QWidget):
 	    #4. Use GPU
 	    if(cn.gpu==True):
 		self.checkBoxUseGPU.setCheckState(QtCore.Qt.Checked)
+		self.lineEditGPUIndex.setText(str(cn.gpu_index))
+		self.lineEditGPUIndex.show()
+		self.labelUseGPUIndex.show()
 	    else:
 		self.checkBoxUseGPU.setCheckState(QtCore.Qt.Unchecked)
+		self.lineEditGPUIndex.hide()
+		self.labelUseGPUIndex.hide()
 	    #5. Channel Swap	
 	    if(cn.channel_swap==True):
 		self.checkBoxChannelSwap.setCheckState(QtCore.Qt.Checked)
@@ -220,6 +245,15 @@ class Ui_Form(QtGui.QWidget):
 	    else:
 		self.lineEditModelPath.setText('')
 
+    def showhideGPUIndex(self,extra=None):
+
+	if self.checkBoxUseGPU.checkState()==0:
+	    self.lineEditGPUIndex.hide()
+	    self.labelUseGPUIndex.hide()
+	else:
+	    self.lineEditGPUIndex.show()
+	    self.labelUseGPUIndex.show()
+	
 
 	
 if __name__ == "__main__":

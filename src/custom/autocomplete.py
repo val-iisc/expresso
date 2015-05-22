@@ -2,8 +2,8 @@ from PyQt4 import QtGui,QtCore
 
 import sys
 import os
-root=os.getenv('HOME')+'/ACM'
-sys.path.append(os.getenv('HOME')+'/caffe/python/caffe/proto')
+root=os.getenv('EXPRESSO_ROOT')
+sys.path.append(os.getenv('CAFFE_ROOT')+'/python/caffe/proto')
 import caffe_pb2
 from google.protobuf import text_format
 #from google.protobuf.descriptor import fielddescriptor
@@ -68,15 +68,13 @@ class CompletionTextEdit(QtGui.QTextEdit):
 	insertData=""
 	moveBack=0
 	tc=self.textCursor()
-	if(self.lastWord()=='CONVOLUTION'):
-	    insertData="\n\tconvolution_param{\n\t\tnum_output:10\n\t\tpad: 0\n\t\tkernel_size: 3\n\t\tstride: 1\n\t}"
+	if(self.lastWord()=='\"Convolution'):
+	    insertData="\"\n\tconvolution_param{\n\t\tnum_output:10\n\t\tpad: 0\n\t\tkernel_size: 3\n\t\tstride: 1\n\t}"
 	    moveBack=2
-        if(self.lastWord()=='POOLING'):
-	    insertData="\n\tpooling_param{\n\t\tpool:MAX\n\t\tkernet_size:3\n\t\tstride:2\n\t}"
-        if(self.lastWord()=='INNER_PRODUCT'):
-	    insertData="\n\tblobs_lr:1\n\tblobs_lr:2\n\tweight_decay:1\n\tweight_decay:0\n\tinner_product_param{\n\t\tnum_output:10\n\t}"
-
-
+        if(self.lastWord()=='\"Pooling'):
+	    insertData="\"\n\tpooling_param{\n\t\tpool:MAX\n\t\tkernel_size:3\n\t\tstride:2\n\t}"
+        if(self.lastWord()=='\"InnerProduct'):
+	    insertData="\"\n\tinner_product_param{\n\t\tnum_output:4096\n\t}"
 	tc.insertText(insertData)
 	#self.textCursor().setPosition(tc.position()+len(insertData)-moveBack)
 	hList=self.getHierarchyList()
@@ -201,7 +199,7 @@ class CompletionTextEdit(QtGui.QTextEdit):
 	if(partialData.count('{')==partialData.count('}')):
 		self.appendData='{\n\n}'
 		self.moveBack=2
-		return ['layers']
+		return ['layer']
 	#If level!=0
 	#EXTRA INITIALLIZATIONS
 	bracketedData=self.getBracketedData()
@@ -216,12 +214,13 @@ class CompletionTextEdit(QtGui.QTextEdit):
 	    print currLine
 	    if("type" in currLine and ":" in currLine):
 		lst=[]
-		for elem in caffe_pb2.LayerParameter().LayerType.DESCRIPTOR.values_by_name.keys():
+		for elem in ["Convolution","Pooling","InnerProduct"]:
 		    lst.append(str(elem))
 		    print 'LIST',lst
 		self.appendData=""
 		self.moveBack=0
 		return lst
+	
 	if(len(hList)>1):
 	    if(':' not in currLine):
 	    #Hiararchial Data

@@ -11,7 +11,6 @@ from PyQt4 import QtCore, QtGui
 import os
 import wizardProto_pb2
 root=os.getenv('EXPRESSO_ROOT')
-root='/home/jaley/Projects/expresso'
 from google.protobuf import text_format
 import wizardViewExtended
 try:
@@ -62,9 +61,10 @@ class Ui_Form(QtGui.QWidget):
         self.pushButtonSnapshot.setGeometry(QtCore.QRect(20, 320, 91, 27))
         self.pushButtonSnapshot.setStyleSheet(_fromUtf8("background-color:rgb(255,255,255,100)"))
         self.pushButtonSnapshot.setObjectName(_fromUtf8("pushButtonSnapshot"))
+	self.pushButtonSnapshot.hide()
         self.heading2ComboBox = QtGui.QComboBox(self.widget)
         self.heading2ComboBox.setGeometry(QtCore.QRect(20, 40, 251, 27))
-        self.heading2ComboBox.setStyleSheet(_fromUtf8("background-color:rgb(255,255,255,100)"))
+        self.heading2ComboBox.setStyleSheet(_fromUtf8("background-color:rgb(255,255,255,100);selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);"))
         self.heading2ComboBox.setObjectName(_fromUtf8("heading2ComboBox"))
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -73,8 +73,9 @@ class Ui_Form(QtGui.QWidget):
 	self.pageNumber=0
 	self.pushButtonNext.clicked.connect(self.nextPageSlot)
 	self.pushButtonBack.clicked.connect(self.previousPageSlot)
+	self.pushButtonBack.hide()
 	self.totalPages=0
-	self.flowName='Import View'#Comment it Later
+	#self.flowName='Import View'#Comment it Later
 	self.textFlowParamHandler=wizardProto_pb2.FlowParam()
 	#SnapShotWidget Start
 	self.snapshotWidget=wizardViewExtended.Ui_Form(flowName=self.flowName)
@@ -89,7 +90,6 @@ class Ui_Form(QtGui.QWidget):
 		self.heading2ComboBox.addItems([elem.heading2 for elem in self.textFlowParamHandler.subflow])
 		self.heading2ComboBox.currentIndexChanged.connect(self.onHeading2Changed)
 		self.onHeading2Changed()
-		print self.textFlowParamHandler
 		#SnapshotPreview
 		
     
@@ -105,18 +105,36 @@ class Ui_Form(QtGui.QWidget):
 
 
     def createFlows(self):
-	#print self.textSubFlowParamHandler
 	self.totalPages=len(self.textSubFlowParamHandler.textiter)
 	if(self.totalPages==0):
 	    self.textEdit.clear();
-	else:
+	    self.pushButtonBack.hide()
+	    self.pushButtonNext.hide()
+	if(self.totalPages==1):
+	    self.pushButtonBack.hide()
+	    self.pushButtonNext.hide()
+	    self.pageNumber=0;
 	    self.setText()
-
+	else:
+	    self.pushButtonNext.show()
+	    self.pushButtonBack.hide()
+	    self.pageNumber=0;
+	    self.setText()
 
     def nextPageSlot(self):
 	if(self.totalPages==0):return
 	if(self.pageNumber+1==self.totalPages):return
 	self.pageNumber=self.pageNumber+1;
+	#Show Hide Stuff
+	if(self.pageNumber+1==self.totalPages):
+	    self.pushButtonNext.hide()
+	else:
+	    self.pushButtonNext.show()
+	if(self.pageNumber==0):
+	    self.pushButtonBack.hide()
+	else:
+	    self.pushButtonBack.show()
+	#Set Text
 	self.setText()
 	pass
 
@@ -124,14 +142,27 @@ class Ui_Form(QtGui.QWidget):
 	if(self.totalPages==0):return
 	if(self.pageNumber==0):return
 	self.pageNumber=self.pageNumber-1;
+	#Show Hide Stuff
+	if(self.pageNumber+1==self.totalPages):
+	    self.pushButtonNext.hide()
+	else:
+	    self.pushButtonNext.show()
+
+	if(self.pageNumber==0):
+	    self.pushButtonBack.hide()
+	else:
+	    self.pushButtonBack.show()
+	#Set Text
 	self.setText()
 	pass
 
     def setText(self):
 	heading=self.textSubFlowParamHandler.textiter[self.pageNumber].heading3
 	text=self.textSubFlowParamHandler.textiter[self.pageNumber].text
-	print 'Heading### : ',heading
-	self.textEdit.setText('<h3>'+heading+'</h3>\n'+text)
+	if heading=="":
+	    self.textEdit.setText(text)
+	else:
+	    self.textEdit.setText('<h3>'+heading+'</h3>\n'+text)
 
 
 
@@ -142,7 +173,7 @@ class Ui_Form(QtGui.QWidget):
         Form.setWindowTitle(_translate("Form", "Form", None))
         self.pushButtonBack.setText(_translate("Form", "Back", None))
         self.pushButtonNext.setText(_translate("Form", "Next", None))
-        self.heading1Label.setText(_translate("Form", "Importing Data", None))
+        self.heading1Label.setText(_translate("Form", self.flowName, None))
         self.pushButtonSnapshot.setText(_translate("Form", "Snapshots", None))
 
 

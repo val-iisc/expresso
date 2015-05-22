@@ -42,7 +42,7 @@ class Ui_Form(QtGui.QWidget):
         self.widget.setObjectName(_fromUtf8("widget"))
         self.label = QtGui.QLabel(self.widget)
         self.label.setGeometry(QtCore.QRect(20, 170, 201, 71))
-        self.label.setStyleSheet(_fromUtf8("font: 21pt \"Ubuntu Condensed\";color:rgb(45,60,45)"))
+        self.label.setStyleSheet(_fromUtf8("font: 18pt \"Ubuntu Condensed\";color:rgb(45,60,45)"))
         self.label.setObjectName(_fromUtf8("label"))
         self.pushButton = QtGui.QPushButton(self.widget)
         self.pushButton.setGeometry(QtCore.QRect(10, 20, 141, 141))
@@ -67,7 +67,7 @@ class Ui_Form(QtGui.QWidget):
         self.pushButton_3.setObjectName(_fromUtf8("pushButton_3"))
         self.label_3 = QtGui.QLabel(self.widget_3)
         self.label_3.setGeometry(QtCore.QRect(10, 170, 151, 71))
-        self.label_3.setStyleSheet(_fromUtf8("font: 21pt \"Ubuntu Condensed\";color:rgb(45,60,45)"))
+        self.label_3.setStyleSheet(_fromUtf8("font: 18pt \"Ubuntu Condensed\";color:rgb(45,60,45)"))
         self.label_3.setObjectName(_fromUtf8("label_3"))
 
 	self.widget_2.hide()#Temporary Fix
@@ -78,8 +78,8 @@ class Ui_Form(QtGui.QWidget):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(_translate("Form", "Form", None))
-        self.label.setText(_translate("Form", "Train New \n"
-"Model", None))
+        self.label.setText(_translate("Form", "Train New / \n"
+"Finetune Model", None))
 	self.setPushButtonIcons()
         self.label_2.setText(_translate("Form", "FineTune \n"
 "Existing Model", None))

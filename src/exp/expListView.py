@@ -44,12 +44,12 @@ class Ui_Form(QtGui.QWidget):
 
     def setupUi(self, Form):
         Form.setObjectName(_fromUtf8("Form"))
-        Form.resize(291, 351)
+        Form.resize(291, 301)
         Form.setStyleSheet(_fromUtf8("background-color:rgb(120, 180, 120)"))
         self.treeWidget = QtGui.QTreeWidget(Form)
         self.treeWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.treeWidget.customContextMenuRequested.connect(self.treeWidgetSlot)
-        self.treeWidget.setGeometry(QtCore.QRect(10, 40, 271, 301))
+        self.treeWidget.setGeometry(QtCore.QRect(10, 40, 271, 261))
         self.treeWidget.setStyleSheet(_fromUtf8("font: 15pt \"Ubuntu Condensed\";background-color:rgb(175, 192, 150);color:rgb(75,75,45)"))
         self.treeWidget.setObjectName(_fromUtf8("treeWidget"))
         self.label = QtGui.QLabel(Form)
@@ -108,7 +108,7 @@ class Ui_Form(QtGui.QWidget):
     def treeWidgetSlot(self,position):
         menu =QtGui.QMenu()
         menu.addAction(self.tr("Remove"),self.removeCurrent)
-        menu.addAction(self.tr("Export"),self.exportCurrent)
+        #menu.addAction(self.tr("Export"),self.exportCurrent)
 	menu.addAction(self.tr("Move to Data"),self.moveToDataSlot)
 	#menu.addAction(self.tr("Remove "),self.removeSlot)
         menu.exec_(self.treeWidget.viewport().mapToGlobal(position))
@@ -142,8 +142,12 @@ class Ui_Form(QtGui.QWidget):
 
 
     def removeCurrent(self):
-	pass
-
+	name= self.treeWidget.currentItem().text(0).__str__()
+	print 'REMOVING ',name
+	for elem in os.listdir(root+'/exp/data'):
+	    if elem==name+'.hdf5':
+		os.remove(root+'/exp/data/'+name+'.hdf5')
+		self.signalRefreshTrigger.emit('Removed features named '+name)
     def refreshTrigger(self):
 	self.fillList()
 

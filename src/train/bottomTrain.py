@@ -38,62 +38,79 @@ class Ui_Form(QtGui.QWidget):
     def setupUi(self, Form):
         Form.setObjectName(_fromUtf8("Form"))
         Form.resize(611, 61)
-        self.stackedWidget = QtGui.QStackedWidget(Form)
-        self.stackedWidget.setGeometry(QtCore.QRect(0, 0, 611, 61))
-        self.stackedWidget.setObjectName(_fromUtf8("widget"))
-	self.addPages()
+        self.widget = QtGui.QWidget(Form)
+        self.widget.setGeometry(QtCore.QRect(0, 0, 611, 61))
+        self.widget.setObjectName(_fromUtf8("widget"))
+	self.currentIndex=0;
+	self.addWidgets()
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(_translate("Form", "Form", None))
 
-    def addPages(self):
-        self.addPage0()
-        self.addPage1()
-        self.addPage2()
-        self.addPage3()
-        self.addPage4()
-	self.currentIndex=0
-
-    def addPage0(self):
-	self.containerWidget=QtGui.QScrollArea(self)
-	self.containerWidget.setStyleSheet('background-color:rgb(120,180,120)')
-	self.stackedWidget.addWidget(self.containerWidget)
-
-    def addPage1(self):
-        self.page1Container=QtGui.QWidget(self)
-        self.page1Container.setGeometry(0,0,611,61)
-        self.page1Container.setStyleSheet("background-color:rgb(210,225,210);")
-        self.page1Widget=netButtonView.Ui_Form(self.page1Container)
-        self.page1Widget.setGeometry(0,0,611,61)
-        #self.page1Container.setWidget(self.page1Widget)
-        self.stackedWidget.addWidget(self.page1Container)
-
-    def addPage2(self):
-	self.containerWidget=QtGui.QScrollArea(self)
-	self.stackedWidget.addWidget(self.containerWidget)
-
-    def addPage3(self):
-	self.containerWidget=QtGui.QScrollArea(self)
-	self.stackedWidget.addWidget(self.containerWidget)
-
-    def addPage4(self):
-	self.containerWidget=QtGui.QScrollArea(self)
-	self.stackedWidget.addWidget(self.containerWidget)
+    #Add the necessary Widgets
+    def addWidgets(self):
+        self.pushButtonBack=QtGui.QPushButton(self)
+        self.pushButtonBack.setGeometry(QtCore.QRect(300,10,150,30))
+        self.pushButtonBack.setText("Back")
+        self.pushButtonBack.setStyleSheet("background-color:rgb(120,120,90);\
+                                                color:rgb(225,225,210)")
+	self.pushButtonBack.hide()
+        self.pushButtonNext=QtGui.QPushButton(self)
+        self.pushButtonNext.setGeometry(QtCore.QRect(450,10,141,30))
+        self.pushButtonNext.setText("Next")
+        self.pushButtonNext.setStyleSheet("background-color:rgb(120,120,90);\
+                                                color:rgb(225,225,210)")
+	self.pushButtonNext.hide()
+        self.pushButtonBack.clicked.connect(self.pushButtonBackSlot)
+        self.pushButtonNext.clicked.connect(self.pushButtonNextSlot)
+	
 
 
-    def pushButtonNextSlot(self):
-        if self.currentIndex==4:return
-        print 'Next Clicked: '+str(self.currentIndex)
-        self.currentIndex=self.currentIndex+1
-        self.stackedWidget.setCurrentIndex(self.currentIndex)
+
 
     def pushButtonBackSlot(self):
         print 'back clicked'
+        if self.currentIndex==5:
+            self.currentIndex=0;
+            self.pushButtonNext.hide()
+            self.pushButtonBack.hide()
+            return;
         if self.currentIndex==0:return
+        if self.currentIndex==1:
+            self.pushButtonNext.hide()
+            self.pushButtonBack.hide()
         self.currentIndex=self.currentIndex-1
-        self.stackedWidget.setCurrentIndex(self.currentIndex)
+
+
+
+    def pushButtonNextSlot(self):
+        if(self.currentIndex==0):
+            self.pushButtonNext.show()
+            self.pushButtonBack.show()
+
+	if(self.currentIndex==2):
+	    self.pushButtonNext.setText('Finish')
+	else:
+	    self.pushButtonNext.setText('Next')
+
+        if(self.currentIndex==3):
+            self.currentIndex=0;
+	    self.pushButtonBack.hide()
+	    self.pushButtonNext.hide()
+	    return
+        if(self.currentIndex==4):return
+        self.currentIndex=self.currentIndex+1
+        pass
+
+
+    def switchToPageSVM(self):
+        print 'SVM Page in central'
+        self.currentIndex=5
+        self.pushButtonBack.show()
+
+
 
 
 

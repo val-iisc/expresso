@@ -8,6 +8,14 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
+import os
+root=os.getenv('EXPRESSO_ROOT')
+import sys
+sys.path.append(root+'/src/wizard')
+import wizardView
+
+
+
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -31,7 +39,10 @@ class Ui_Form(QtGui.QWidget):
     def setupUi(self, Form):
         Form.setObjectName(_fromUtf8("Form"))
         Form.resize(291, 351)
-        self.widget = QtGui.QWidget(Form)
+        self.widget = wizardView.Ui_Form(Form,flowName='Net View')
+        self.widget.heading1Label.setStyleSheet(_fromUtf8("background-color:rgb(0,0,0,0);color:rgba(255,255,255,175);\n"
+"font: 18pt \"Ubuntu Condensed\";"))
+
         self.widget.setGeometry(QtCore.QRect(0, 0, 291, 351))
         self.widget.setObjectName(_fromUtf8("widget"))
 

@@ -283,7 +283,7 @@ class Ui_Form(QtGui.QWidget):
         self.label_17.setObjectName(_fromUtf8("label_17"))
         self.horizontalLayout_10.addWidget(self.label_17)
         self.comboBoxSelectModel = QtGui.QComboBox(self.layoutWidget_9)
-        self.comboBoxSelectModel.setStyleSheet(_fromUtf8("font: 14pt \"Ubuntu Condensed\";background-color:rgb(210, 225, 210)"))
+        self.comboBoxSelectModel.setStyleSheet(_fromUtf8("font: 14pt \"Ubuntu Condensed\";background-color:rgb(210, 225, 210);selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);"))
         self.comboBoxSelectModel.setObjectName(_fromUtf8("comboBoxSelectModel"))
         self.horizontalLayout_10.addWidget(self.comboBoxSelectModel)
         self.label_18 = QtGui.QLabel(self.widget_4)
@@ -298,6 +298,7 @@ class Ui_Form(QtGui.QWidget):
         self.pushButtonSave.setGeometry(QtCore.QRect(450, 30, 75, 32))
         self.pushButtonSave.setStyleSheet(_fromUtf8("font: 14pt \"Ubuntu Condensed\";background-color:rgb(225, 225, 210)"))
         self.pushButtonSave.setObjectName(_fromUtf8("pushButtonSave"))
+	self.widget_6.hide()
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -326,7 +327,7 @@ class Ui_Form(QtGui.QWidget):
 	#Added by Jaley 
 	self.labelGamma=QtGui.QLabel(Form)
 	self.labelGamma.setText("Gamma")
-	self.labelGamma.setGeometry(QtCore.QRect(230,430,300,50))
+	self.labelGamma.setGeometry(QtCore.QRect(230,430,150,50))
         self.labelGamma.setStyleSheet(_fromUtf8("font: 14pt \"Ubuntu Condensed\";color:rgb(45, 60, 45);background-color:rgba(0,0,0,0)"))
 	self.lineEditGamma = QtGui.QLineEdit(Form)
         self.lineEditGamma.setStyleSheet(_fromUtf8("font: 14pt \"Ubuntu Condensed\";background-color:rgb(210, 225, 210)"))
@@ -344,7 +345,7 @@ class Ui_Form(QtGui.QWidget):
 	self.netHandler=netConfig_pb2.Param();
         text_format.Merge(self.data,self.netHandler)
 	self.protoHandler=caffe_pb2.SolverParameter()
-	if(self.index!=None):
+	if(self.index!=None and len(self.netHandler.net)>0):
 	    text_format.Merge(open(self.netHandler.net[self.index].solverpath).read(),self.protoHandler)
 	else:
 	    text_format.Merge(open(root+'/src/custom/defaultSolver.prototxt').read(),self.protoHandler)

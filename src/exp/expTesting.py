@@ -69,7 +69,7 @@ class Ui_Form(QtGui.QWidget):
         self.listWidget.setObjectName(_fromUtf8("listView"))
         self.comboBox = QtGui.QComboBox(Form)
         self.comboBox.setGeometry(QtCore.QRect(330, 87, 201, 31))
-        self.comboBox.setStyleSheet(_fromUtf8("background-color:rgb(230,240,210);\n"
+        self.comboBox.setStyleSheet(_fromUtf8("background-color:rgb(230,240,210);selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);\n"
 "font: 14pt \"Ubuntu Condensed\";"))
         self.comboBox.setObjectName(_fromUtf8("comboBox"))
         self.label = QtGui.QLabel(Form)
@@ -148,7 +148,7 @@ class Ui_Form(QtGui.QWidget):
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.comboBox_2 = QtGui.QComboBox(Form)
         self.comboBox_2.setGeometry(QtCore.QRect(20, 60, 256, 31))
-        self.comboBox_2.setStyleSheet(_fromUtf8("background-color:rgb(230,240,210);\n"
+        self.comboBox_2.setStyleSheet(_fromUtf8("background-color:rgb(230,240,210);selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);\n"
 "font: 14pt \"Ubuntu Condensed\";"))
         self.comboBox_2.setObjectName(_fromUtf8("comboBox_2"))
         self.label_3 = QtGui.QLabel(Form)
@@ -186,7 +186,7 @@ class Ui_Form(QtGui.QWidget):
         self.label_7.setObjectName(_fromUtf8("label_7"))
         self.comboBox_3 = QtGui.QComboBox(Form)
         self.comboBox_3.setGeometry(QtCore.QRect(330, 170, 201, 31))
-        self.comboBox_3.setStyleSheet(_fromUtf8("background-color:rgb(230,240,210);\n"
+        self.comboBox_3.setStyleSheet(_fromUtf8("background-color:rgb(230,240,210);selection-color:rgb(0,0,0);selection-background-color:rgba(255,255,255,100);\n"
 "font: 14pt \"Ubuntu Condensed\";"))
         self.comboBox_3.setObjectName(_fromUtf8("comboBox_3"))
         self.layoutWidget_2 = QtGui.QWidget(Form)
@@ -218,8 +218,9 @@ class Ui_Form(QtGui.QWidget):
         Form.setWindowTitle(_translate("Form", "Form", None))
         self.label.setText(_translate("Form", "BatchSize", None))
         self.label_11.setText(_translate("Form", "Accuracy       ", None))
-        self.lineEditName.setText(_translate("Form", "Untitled", None))
-        self.pushButtonGenerate.setText(_translate("Form", "Generate", None))
+        self.lineEditName.setText(_translate("Form", "", None))
+	self.lineEditName.setReadOnly(True)
+        self.pushButtonGenerate.setText(_translate("Form", "Evaluate", None))
         self.textEdit_3.setHtml(_translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -230,10 +231,10 @@ class Ui_Form(QtGui.QWidget):
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; text-decoration: underline;\"><br /></p></body></html>", None))
         self.label_2.setText(_translate("Form", "Testing", None))
         self.label_3.setText(_translate("Form", "Loss Type", None))
-        self.label_6.setText(_translate("Form", "Deploy Net Selection", None))
+        self.label_6.setText(_translate("Form", "Feature Set", None))
         self.label_7.setText(_translate("Form", "Testing Blob Selection", None))
         self.label_12.setText(_translate("Form", "Loss                ", None))
-        self.lineEditName_2.setText(_translate("Form", "Untitled", None))
+        self.lineEditName_2.setText(_translate("Form", "", None))
 	self.fillData()
         self.onNetSelectionChangedSlot()
         self.comboBox_2.currentIndexChanged.connect(self.onNetSelectionChangedSlot)
@@ -256,7 +257,7 @@ class Ui_Form(QtGui.QWidget):
 
         #Fill the data in all the comboBoxes
         #Step 1 : Fill the Deploy List
-	self.comboBox_2.addItems([elem for elem in os.listdir(root+'/exp/data')])
+	self.comboBox_2.addItems([elem[0:-5] for elem in os.listdir(root+'/exp/data')])
 
         #Filling the Data List Here
         self.comboBox_3.addItems([files[0:-5] for files in os.listdir(root+'/data') if files.endswith('.hdf5')])
@@ -284,7 +285,7 @@ class Ui_Form(QtGui.QWidget):
 	print self.comboBox_2.currentText().__str__()
 	self.listWidget.clear()
 	if self.comboBox_2.currentText().__str__()=="":return
-	with h5py.File(root+'/exp/data/'+self.comboBox_2.currentText().__str__(),'r') as f:
+	with h5py.File(root+'/exp/data/'+self.comboBox_2.currentText().__str__()+'.hdf5','r') as f:
 	    print f.keys()
             for elem in f.keys():
             	item = QtGui.QListWidgetItem(elem)
@@ -303,7 +304,7 @@ class Ui_Form(QtGui.QWidget):
 
 
     def runParallel(self,netName,netList,dataName):
-	handle=SoftMaxAccuracy(netName,netList,dataName)
+	handle=SoftMaxAccuracy(netName+'.hdf5',netList,dataName)
 	accuracy=handle.getAccuracy()
 	print accuracy
 	self.signalRefreshTrigger.emit("Accuracy for experiment is "+str(accuracy))

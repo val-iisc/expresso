@@ -29,6 +29,7 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_Form(QtGui.QWidget):
+    signalRefreshTrigger=QtCore.pyqtSignal(object)
     def __init__(self, parent=None,dataName=None):
         super(Ui_Form, self).__init__(parent)
         self.dataName=dataName
@@ -54,6 +55,7 @@ class Ui_Form(QtGui.QWidget):
         self.lineEdit = QtGui.QLineEdit(Form)
         self.lineEdit.setGeometry(QtCore.QRect(40, 70, 331, 27))
         self.lineEdit.setObjectName(_fromUtf8("lineEdit"))
+	self.lineEdit.setReadOnly(True)
         self.toolButton = QtGui.QToolButton(Form)
         self.toolButton.setGeometry(QtCore.QRect(380, 70, 23, 25))
         self.toolButton.setObjectName(_fromUtf8("toolButton"))
@@ -100,7 +102,9 @@ class Ui_Form(QtGui.QWidget):
 	elif(self.comboBox.currentText().__str__()=='HDF5'):
 	    print 'Calling HDF5 Saver'
 	    shutil.copyfile(root+'/data/'+self.dataName+'.hdf5',self.lineEdit.text().__str__())
-	    	
+	self.signalRefreshTrigger.emit('\''+self.dataName+'\' has been exported with '+self.comboBox.currentText().__str__()+' format to location \''+self.lineEdit.text().__str__()+'\'')
+
+
 	self.closedSlot()
  
 

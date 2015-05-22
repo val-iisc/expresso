@@ -67,6 +67,7 @@ class Ui_Form(QtGui.QWidget):
 	self.addPage1()
 	self.addPage2()
 	self.addPage3()
+	self.addPage4()
 	self.addPage5()
 	self.currentIndex=0
 
@@ -152,6 +153,15 @@ class Ui_Form(QtGui.QWidget):
 	self.page3Widget.setGeometry(0,0,691,591)
 	self.stackedWidget.addWidget(self.page3Container)
 
+    def addPage4(self):
+	self.page4Container=QtGui.QWidget(self)
+        self.page4Container.setGeometry(0,0,611,591)
+	self.page4Container.setStyleSheet("background-color:rgb(0,0,0);")
+	self.page4Widget=QtGui.QWidget(self.page4Container)
+	self.page4Widget.setGeometry(0,0,691,591)
+	self.stackedWidget.addWidget(self.page4Container)
+
+
     def addPage5(self):
 	self.page5Container=QtGui.QWidget(self)
         self.page5Container.setGeometry(0,0,611,591)
@@ -185,8 +195,13 @@ class Ui_Form(QtGui.QWidget):
 	self.currentIndex=3
 	self.stackedWidget.setCurrentIndex(self.currentIndex)
 
-    def switchToPage5(self):
+    def switchToPage4(self):
 	self.currentIndex=4
+	self.stackedWidget.setCurrentIndex(self.currentIndex)
+
+
+    def switchToPage5(self):
+	self.currentIndex=5
 	self.stackedWidget.setCurrentIndex(self.currentIndex)
 
  

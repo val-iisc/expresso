@@ -28,6 +28,7 @@ import transformationView
 import splitView
 import attachLabelView
 import exportView
+import shutil
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
@@ -67,7 +68,7 @@ class Ui_Form(QtGui.QWidget):
         self.tableWidgetData.customContextMenuRequested.connect(self.tableWidgetSlot)
 
         self.tableWidgetData.setHorizontalHeaderLabels(['name','#Elements','Depth','Width','Height'])
-	
+
 
         self.widget = pg.GraphicsLayoutWidget(Form)
         self.widget.setGeometry(QtCore.QRect(360, 20, 231, 231))
@@ -76,6 +77,7 @@ class Ui_Form(QtGui.QWidget):
         self.horizontalSlider.setGeometry(QtCore.QRect(440, 260, 151, 29))
         self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
         self.horizontalSlider.setObjectName(_fromUtf8("horizontalSlider"))
+	self.refreshContext=True
         self.label = QtGui.QLabel(Form)
         self.label.setGeometry(QtCore.QRect(20, 20, 201, 17))
         font = QtGui.QFont()
@@ -105,6 +107,7 @@ class Ui_Form(QtGui.QWidget):
 	self.data = np.random.randint(255, size=(100, 100, 3))
 	self.img.setImage(self.data)
 	#Triggers
+	self.tableWidgetData.itemChanged.connect(self.tableWidgetDataChanged)	
 	self.tableWidgetData.itemSelectionChanged.connect(self.changeContent)
 	self.horizontalSlider.valueChanged.connect(self.changeView)
 	self.spinBox.valueChanged.connect(self.changeView)	
@@ -116,23 +119,26 @@ class Ui_Form(QtGui.QWidget):
     def retranslateUi(self, Form):
         Form.setWindowTitle(_translate("Form", "Form", None))
         self.label.setText(_translate("Form", "View/Select  Data", None))
-        self.label_2.setText(_translate("Form", "Type of Clubbing", None))
+        #self.label_2.setText(_translate("Form", "Type of Clubbing", None))
 	self.refreshtable()
 	#self.changeView()
 
     def changeContent(self):
+	if(self.tableWidgetData.currentItem().column()!=0):return
         print self.tableWidgetData.currentRow()
         #name=str(self.tableWidgetData.itemAt(QtCore.QPoint(self.tableWidgetData.currentRow(),0)).text())
+	if(self.tableWidgetData.currentItem()==None):return
 	name=str(self.tableWidgetData.currentItem().text())
         #name=str(self.tableWidgetData.itemAt(0,0).text())
         print name
         f=h5py.File(self.root+'/data/'+name+'.hdf5','r')
-	self.horizontalSlider.setMaximum(f['data'].shape[0]-2)
-	self.spinBox.setMaximum(f['data'].shape[0]-2)
+	self.horizontalSlider.setMaximum(f['data'].shape[0]-1)
+	self.spinBox.setMaximum(f['data'].shape[0]-1)
 	self.changeView()
 
 
     def changeView(self,index=0):
+	if(self.tableWidgetData.currentItem().column()!=0):return
 	print index
 	print self.tableWidgetData.currentRow()
 	self.horizontalSlider.setValue(index)
@@ -140,6 +146,7 @@ class Ui_Form(QtGui.QWidget):
 	#name=str(self.tableWidgetData.itemAt(QtCore.QPoint(self.tableWidgetData.currentRow(),0)).text())
 	#name=str(self.tableWidgetData.itemAt(0,0).text())
 	name=str(self.tableWidgetData.currentItem().text())
+	self.dataName=name
 	print self.root+'/data/'+name+'.hdf5'
 	f=h5py.File(self.root+'/data/'+name+'.hdf5','r')
 	data=np.array(f['data'][index],dtype=np.float32)
@@ -147,25 +154,41 @@ class Ui_Form(QtGui.QWidget):
 	if(data.shape[0]!=3):
 	    data=np.max(data,axis=0)
 	    self.data=np.array(data*255/np.amax(data),dtype='uint8');
+	    #Correction in image Starts
+	    self.data=np.fliplr(self.data.transpose(1,0))
+	    #Correction in image Ends
 	    self.img.setImage(self.data)
 	    if('label' in f.keys()):
+		self.label_2.show()
 		self.label_2.setText(str(f['label'][index]))
-
+	    else:
+		self.label_2.hide()
 	    return
 	#Data Display Stuff ends
+	### Correction in display Starts
+	print data.shape
+	data=[np.fliplr(data[i,:,:].transpose(1,0)) for i in range(3)]
+	data=np.array(data);
+	### Correction in display ends
 	data=data.astype('uint8')
 	self.data=np.transpose(np.array(data),[1,2,0])
         self.img.setImage(self.data)
 	if('label' in f.keys()):
+	    self.label_2.show()
 	    self.label_2.setText(str(f['label'][index]))
-		
+	else:
+	    self.label_2.hide()	
 
     def refreshtable(self,extra=None):
+	self.refreshContext=True
 	print 'reached here'
 	print self.root+'/data'
         #Remove previous entries of table
         cnt=self.tableWidgetData.rowCount();
-        for i in range(cnt):self.tableWidgetData.removeRow(0)
+	
+        for i in range(cnt):
+	    self.refreshContext=True
+	    self.tableWidgetData.removeRow(0)
         #Remove previous entries ends
         for files in os.listdir(self.root+'/data'):
 	    print files
@@ -176,26 +199,41 @@ class Ui_Form(QtGui.QWidget):
                 f=h5py.File(self.root+'/data/'+files,'r')
 		if('data' not in f.keys()):continue
                 shape= f['data'].shape
+		if(len(shape)!=4):continue
+	    	self.refreshContext=True
                 self.tableWidgetData.insertRow(self.tableWidgetData.rowCount());
+	    	self.refreshContext=True
                 self.tableWidgetData.setItem(j,0,QtGui.QTableWidgetItem(files.split('.')[0] ));
+	    	self.refreshContext=True
                 self.tableWidgetData.setItem(j,1,QtGui.QTableWidgetItem(str(shape[0])));
+	    	self.refreshContext=True
                 self.tableWidgetData.setItem(j,2,QtGui.QTableWidgetItem(str(shape[1])));
+	    	self.refreshContext=True
                 self.tableWidgetData.setItem(j,3,QtGui.QTableWidgetItem(str(shape[2])));
+	    	self.refreshContext=True
                 self.tableWidgetData.setItem(j,4,QtGui.QTableWidgetItem(str(shape[3])));
-		
+	    	self.refreshContext=True	
 		self.tableWidgetData.item(j,0).setBackground(QtGui.QColor(210,210,180))
+	    	self.refreshContext=True
 		self.tableWidgetData.item(j,1).setBackground(QtGui.QColor(210,210,180))
+	    	self.refreshContext=True
 		self.tableWidgetData.item(j,2).setBackground(QtGui.QColor(210,210,180))
+	    	self.refreshContext=True
 		self.tableWidgetData.item(j,3).setBackground(QtGui.QColor(210,210,180))
+	    	self.refreshContext=True
 		self.tableWidgetData.item(j,4).setBackground(QtGui.QColor(210,210,180))
 		if('label' in f.keys()):
+	    	    self.refreshContext=True
 		    self.tableWidgetData.item(j,0).setBackground(QtGui.QColor(165,180,150))
+	    	    self.refreshContext=True
 		    self.tableWidgetData.item(j,1).setBackground(QtGui.QColor(165,180,150))
+	    	    self.refreshContext=True
 		    self.tableWidgetData.item(j,2).setBackground(QtGui.QColor(165,180,150))
+	    	    self.refreshContext=True
 		    self.tableWidgetData.item(j,3).setBackground(QtGui.QColor(165,180,150))
+	    	    self.refreshContext=True
 		    self.tableWidgetData.item(j,4).setBackground(QtGui.QColor(165,180,150))
-		    
-
+			    
     def tableWidgetSlot(self,position):
         menu =QtGui.QMenu()
         exportMenu=menu.addAction(self.tr("Export"),self.exportSlot)
@@ -205,8 +243,8 @@ class Ui_Form(QtGui.QWidget):
 	splitMenu=menu.addAction(self.tr("Split"),self.splitSlot)
 	attachMenu=menu.addAction(self.tr("Attach/Change Label"),self.attachLabelSlot)
 	#mergeMenu=menu.addAction(self.tr("Merge Data"),self.mergeSlot)
-	randomizeMenu=menu.addAction(self.tr("Randomize"),self.randomizeSlot)
-	renameMenu=menu.addAction(self.tr("Rename"),self.renameSlot)
+	#randomizeMenu=menu.addAction(self.tr("Randomize"),self.randomizeSlot)
+	#renameMenu=menu.addAction(self.tr("Rename"),self.renameSlot)
 	removeMenu=menu.addAction(self.tr("Remove"),self.removeSlot)
         menu.exec_(self.tableWidgetData.viewport().mapToGlobal(position))
 
@@ -215,7 +253,9 @@ class Ui_Form(QtGui.QWidget):
 	print 'Exporting Slot'
 	self.exportWidget=exportView.Ui_Form(dataName=name)
 	self.exportWidget.setGeometry(self.cursor().pos().x(),self.cursor().pos().y(),421,183)
+	self.exportWidget.signalRefreshTrigger.connect(self.signalRefreshTrigger.emit)
 	self.exportWidget.show()
+	
 
 
     def dataExportSlot(self):
@@ -235,6 +275,7 @@ class Ui_Form(QtGui.QWidget):
 	name=str(self.tableWidgetData.currentItem().text())
 	print 'Splitting Slot'
 	self.splitWidget=splitView.Ui_Form(dataName=name)
+	self.splitWidget.signalRefreshTrigger.connect(self.signalRefreshTrigger.emit)
 	self.splitWidget.setGeometry(self.cursor().pos().x(),self.cursor().pos().y(),421,232)
 	self.splitWidget.show()
 
@@ -246,6 +287,7 @@ class Ui_Form(QtGui.QWidget):
 	print 'Attach Slot'
 	self.attachLabelWidget=attachLabelView.Ui_Form(dataName=name)
 	self.attachLabelWidget.setGeometry(self.cursor().pos().x(),self.cursor().pos().y(),421,183)
+	self.attachLabelWidget.signalRefreshTrigger.connect(self.signalRefreshTrigger.emit)
 	self.attachLabelWidget.show()
 
     def mergeSlot(self):
@@ -253,6 +295,16 @@ class Ui_Form(QtGui.QWidget):
 			
 
     def renameSlot(self):
+	name=str(self.tableWidgetData.currentItem().text())
+	self.lineEditRename=QtGui.QLineEdit()
+	self.lineEditRename.setGeometry(self.cursor().pos().x(),self.cursor().pos().y(),200,20)
+	self.lineEditRename.setWindowTitle('Rename')
+	self.lineEditRename.setWindowModality(QtCore.Qt.ApplicationModal)
+	self.lineEditRename.setText(name)
+	self.lineEditRename.show()
+
+	print 'Closed'
+
 	print 'Rename Slot'
 
     def removeSlot(self):
@@ -265,6 +317,37 @@ class Ui_Form(QtGui.QWidget):
 
     def refreshTrigger(self,extra=None):
 	self.refreshtable()
+
+    def tableWidgetDataChanged(self,item):
+	if(self.refreshContext==True):
+	    self.refreshContext=False;
+            return
+	#If he renames it to nothing
+	if(item.column()!=0):return
+	if(item.text().__str__()==''):
+	    self.tableWidgetData.itemChanged.disconnect(self.tableWidgetDataChanged) #Disconnect slot
+	    self.tableWidgetData.currentItem().setText(self.dataName)
+	    self.tableWidgetData.itemChanged.connect(self.tableWidgetDataChanged) #Disconnect slot
+	    return
+
+
+	if(item.text().__str__()+'.hdf5' in os.listdir(root+'/data')):
+		reply = QtGui.QMessageBox.question(self, 'Message',
+           		"File already Exists. Overwrite ?", QtGui.QMessageBox.Yes | 
+            		QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+		if(reply==QtGui.QMessageBox.Yes):
+	    	    shutil.move(root+'/data/'+self.dataName+'.hdf5',root+'/data/'+item.text().__str__()+'.hdf5')
+	    	    self.signalRefreshTrigger.emit('\''+self.dataName+'\'has been renamed to \''+item.text().__str__()+'\'')
+		else:
+	    	    self.refreshContext=True
+	    	    self.tableWidgetData.currentItem().setText(self.dataName)
+
+
+	else:
+	    shutil.move(root+'/data/'+self.dataName+'.hdf5',root+'/data/'+item.text().__str__()+'.hdf5')
+	    self.signalRefreshTrigger.emit('\''+self.dataName+'\'has been renamed to \''+item.text().__str__()+'\'')
+
+	
 
 if __name__ == "__main__":
     import sys

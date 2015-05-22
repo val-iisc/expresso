@@ -108,7 +108,7 @@ class Ui_Form(QtGui.QWidget):
         self.widgetContainer.setGeometry(QtCore.QRect(40, 59, 551, 311))
         self.widgetContainer.setObjectName(_fromUtf8("widget"))
         self.widget = trainValidDataView.Ui_Form(self.widgetContainer)
-	self.widget.setGeometry(QtCore.QRect(0, 0, 511, 252))
+	self.widget.setGeometry(QtCore.QRect(0, 0, 511, 340))
         self.widget.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
 
 
@@ -119,6 +119,7 @@ class Ui_Form(QtGui.QWidget):
     def retranslateUi(self, Form):
         Form.setWindowTitle(_translate("Form", "Form", None))
         self.pushButtonFinish.setText(_translate("Form", "Finish", None))
+	self.pushButtonFinish.hide()
         self.label_11.setText(_translate("Form", "Model Name         ", None))
 	self.label_11.setVisible(False)
         self.lineEditModelName.setText(_translate("Form", "Untitled", None))

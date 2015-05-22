@@ -27,6 +27,7 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_Form(QtGui.QWidget):
+    signalRefreshTrigger=QtCore.pyqtSignal(object)
     def __init__(self, parent=None,dataName=None):
         super(Ui_Form, self).__init__(parent)
         self.dataName=dataName
@@ -77,7 +78,9 @@ class Ui_Form(QtGui.QWidget):
     def submit(self):
 	if(self.dataName==None):return
 	self.attachLabel()
+	self.signalRefreshTrigger.emit('label is attached to '+self.dataName)
 	self.close()
+
     def reject(self):
 	self.close()
 
