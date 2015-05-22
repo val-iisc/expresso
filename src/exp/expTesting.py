@@ -257,7 +257,7 @@ class Ui_Form(QtGui.QWidget):
 
         #Fill the data in all the comboBoxes
         #Step 1 : Fill the Deploy List
-	self.comboBox_2.addItems([elem[0:-5] for elem in os.listdir(root+'/exp/data')])
+	self.comboBox_2.addItems([elem[0:-5] for elem in os.listdir(root+'/exp/data') if elem.endswith('.hdf5')])
 
         #Filling the Data List Here
         self.comboBox_3.addItems([files[0:-5] for files in os.listdir(root+'/data') if files.endswith('.hdf5')])
