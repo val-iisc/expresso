@@ -1,6 +1,6 @@
-CAFFE_ROOT=/home/jaley/Documents/caffefresh/caffe-master
-EXPRESSO_ROOT=/home/jaley/Projects/expresso
-HTTP_PROXY=http://proxy.serc.iisc.in:3128
+CAFFE_ROOT=
+EXPRESSO_ROOT=
+HTTP_PROXY=
 
 sudo apt-get install python-qt4
 sudo apt-get install pyqt4-dev-tools

@@ -1,5 +1,4 @@
 *.pyc
-*.npy
 *.hdf5
 *.caffemodel
 *.zip
