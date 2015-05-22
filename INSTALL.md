@@ -11,17 +11,22 @@ If Caffe has been installed, add the following environmental variables to your .
 `HTTP_PROXY` : If you need/use a HTTP proxy, enter the proxy string here (without quotes)
 
 Type the following on the command line:
+
     source ~/.bashrc
 
 To begin installation, type the following on command line:
+
     sh install.sh
 
 
 To check if the installation is successful, first type the following on the command-line:
+
     echo $EXPRESSO_ROOT
+
     echo $CAFFE_ROOT
 
 and verify that they are correct. Having done so, type
+
     sh run_expresso.sh
 
 This should display Expresso''s main screen.
