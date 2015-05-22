@@ -20,7 +20,6 @@ import numpy as np
 import sys
 import os
 sys.path.append(os.getenv('EXPRESSO_ROOT')+'/src/functions')
-sys.path.append('/home/jaley/Projects/expresso/src/functions')
 import FunctionHandler
 
 try:

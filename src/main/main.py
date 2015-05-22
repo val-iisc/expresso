@@ -21,11 +21,11 @@ except AttributeError:
 import sys
 import os
 import numpy as np
-env_dict=np.load('../../env_variables.npy')
-print env_dict,'ENVIRONMENT DICTIONARY'
+# env_dict=np.load('../../env_variables.npy')
+# print env_dict,'ENVIRONMENT DICTIONARY'
 
-for idx in range(len(env_dict)//2):
-    os.environ[env_dict[idx]]=env_dict[idx+len(env_dict)//2]
+# for idx in range(len(env_dict)//2):
+#    os.environ[env_dict[idx]]=env_dict[idx+len(env_dict)//2]
 
 root=str(os.getenv('EXPRESSO_ROOT'))
 print root,'ROOT'

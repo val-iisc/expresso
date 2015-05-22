@@ -4,7 +4,6 @@
 import sys
 import os
 root=os.getenv('EXPRESSO_ROOT')
-root='/home/jaley/Projects/expresso'
 caffe_root=os.getenv('CAFFE_ROOT')
 sys.path.append(root+'/src/net/config')
 sys.path.append(caffe_root+'/python')

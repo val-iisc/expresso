@@ -1,5 +1,3 @@
-CAFFE_ROOT=
-EXPRESSO_ROOT=
 HTTP_PROXY=
 
 sudo apt-get install python-qt4
@@ -16,5 +14,3 @@ echo No proxy
 sudo pip install pyqtgraph
 sudo pip install qtutils 
 fi
-
-python install.py $CAFFE_ROOT $EXPRESSO_ROOT
