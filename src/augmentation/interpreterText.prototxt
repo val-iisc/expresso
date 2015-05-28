@@ -1,0 +1,11 @@
+interpreter{
+	type:DIRECT
+	name:"cropping"
+	funcDirectName:"croppingFunc"
+}
+
+interpreter{
+	type:DIRECT
+	name:"central cropping"
+	funcDirectName:"croppingWithoutStretchingFunc"
+}

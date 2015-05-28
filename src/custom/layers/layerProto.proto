@@ -1,0 +1,16 @@
+package LayerCalc;
+
+message Param{
+	repeated LayerCalc layer_calc=1;
+}
+message LayerCalc{
+	required string name=1;
+	required string filename=2;
+	optional Color background=3;
+}
+message Color{
+	required int32 r=1;
+	required int32 g=2;
+	required int32 b=3;
+	required int32 a=4;
+}

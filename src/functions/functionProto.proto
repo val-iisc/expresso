@@ -1,0 +1,12 @@
+package functionSpecification;
+
+message Param{
+	repeated FunctionParam func=1;
+}
+
+message FunctionParam{
+	required string name=1;
+	required string funcName=2;
+	repeated string includepath=3;
+}
+

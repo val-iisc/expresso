@@ -1,0 +1,27 @@
+package interpreterSpecification;
+
+message Param{
+	repeated InterpreterParam interpreter=1;
+} 
+
+message InterpreterParam{	
+enum Type{
+	DIRECT=0;
+	CUSTOM=1;
+}
+//DIRECT only requres name, if you specify other parameters, they will be ignored
+//CUSTOM requires all the rest parameters, but doesn't require name. It is used if you want to include function from somewhere else
+	optional Type type=1[default=DIRECT];
+	optional string name=2;
+	optional string funcDirectName=10;
+	optional string getLines=3;
+	//Have to be absolute+
+	optional string operate=4;
+	optional string getLabels=5;
+	optional string getFunc1Name=6;
+	optional string getFunc2Name=7;
+	repeated string includePath=8;
+	repeated string moduleName=9;
+}
+
+

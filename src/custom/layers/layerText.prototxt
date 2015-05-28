@@ -1,0 +1,45 @@
+layer_calc{
+	name:"Convolution"
+	filename:"calcConvolution"
+	background:{
+		r:180
+		g:180
+		b:120
+	}
+}
+layer_calc{
+	name:"Pooling"
+	filename:"calcPooling"
+	background{
+		r:150
+		g:150
+		b:120
+	}
+}
+layer_calc{
+	name:"InnerProduct"
+	filename:"calcInnerProduct"
+	background{
+		r:210
+		g:150
+		b:120
+	}
+}
+layer_calc{
+	name:"ReLU"
+	filename:"calcReLU"
+	background{
+		r:210
+		g:240
+		b:225
+	}
+}
+layer_calc{
+	name:"Concat"
+	filename:"calcConcat"
+	background{
+		r:150
+		g:150
+		b:180
+	}
+}

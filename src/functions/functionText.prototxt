@@ -1,0 +1,12 @@
+func{
+	name:"log"
+	funcName:"logFunc"
+}
+func{
+	name:"sigmoid"
+	funcName:"sigmoidFunc"
+}
+func{
+	name:"invert"
+	funcName:"invertFunc"
+}

@@ -3,8 +3,10 @@ import h5py
 import os
 import sys
 import croppingWithoutStretchingFunc
+from google.protobuf import text_format
 root=os.getenv('EXPRESSO_ROOT')
-
+sys.path.append(root+'/src/augmentation')
+import interpreterProto_pb2
 class AugmentationHandler:
     def __init__(self):
 	#Array of Lines
@@ -17,25 +19,28 @@ class AugmentationHandler:
 	self.labelDict={}
 	self.arg1Dict={}	
 	self.arg2Dict={}
+	self.importList=[]
+	self.interpreterHandler=interpreterProto_pb2.Param()
+	text_format.Merge(open(root+'/src/augmentation/interpreterText.prototxt','r').read(),self.interpreterHandler)
+	self.directInterpreter()
+	#self.operateDict['central crop']=croppingWithoutStretchingFunc.operate
 
-	self.operateDict['crop']=croppingFunc.operate
-	self.lineDict['crop']=croppingFunc.getLines
-	self.labelDict['crop']=croppingFunc.getLabels
-	self.arg1Dict['crop']=croppingFunc.arg1Name()
-	self.arg2Dict['crop']=croppingFunc.arg2Name()
 
-	self.operateDict['central crop']=croppingWithoutStretchingFunc.operate
-
-	self.lineDict['central crop']=croppingWithoutStretchingFunc.getLines
-	self.labelDict['central crop']=croppingWithoutStretchingFunc.getLabels
-	self.arg1Dict['central crop']=croppingWithoutStretchingFunc.arg1Name()
-	self.arg2Dict['central crop']=croppingWithoutStretchingFunc.arg2Name()
-
-	self.arg1Dict['central crop']=croppingWithoutStretchingFunc.arg1Name()
-	self.arg2Dict['central crop']=croppingWithoutStretchingFunc.arg2Name()
-
+	#self.arg2Dict['central crop']=croppingWithoutStretchingFunc.arg2Name()
 
 	self.totalLines=None
+
+    def directInterpreter(self):
+	for elem in self.interpreterHandler.interpreter:
+	    if(elem.type==1):continue
+	    self.importList.append(__import__(elem.funcDirectName))
+	    currentImport=self.importList[-1]
+	    self.lineDict[elem.name]=eval('self.importList[-1].getLines')
+	    self.operateDict[elem.name]=eval('self.importList[-1].operate')
+	    self.labelDict[elem.name]=eval('self.importList[-1].getLabels')
+	    self.arg1Dict[elem.name]=eval('self.importList[-1].arg1Name')()
+	    self.arg2Dict[elem.name]=eval('self.importList[-1].arg2Name')()
+
 
     #Dimention here are depth x length x width
     #ArgArray is [[funcName arg1 arg2],[funcName, arg1,arg2]]

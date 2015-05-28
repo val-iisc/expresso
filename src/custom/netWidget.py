@@ -23,11 +23,12 @@ sys.path.append(root+'/src/net')
 import layerView
 import netConfig_pb2
 import inspect
-
+sys.path.append(root+'/src/custom/layers')
+import layerProto_pb2
 
 #Jaley End
-sys.path.append(root+'/src/custom/layers')
 #import conv
+
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -75,6 +76,16 @@ class MyForm(QtGui.QWidget):
         self.textEdit.setObjectName(_fromUtf8("textEdit"))
 
 	self.isNewLayer=False
+	#Jaley 25 Mar 2015 Start
+	self.layerCalcHandler=layerProto_pb2.Param()
+	text_format.Merge(open(root+'/src/custom/layers/layerText.prototxt').read(),self.layerCalcHandler)
+	self.importList=[]
+	self.funcDict={}
+	for elem in self.layerCalcHandler.layer_calc:
+	    self.importList.append(__import__(elem.filename))
+            self.funcDict[elem.name]=eval('self.importList[-1].operate')
+	#Jaley 25 Mar 2015 Ends
+
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -281,6 +292,11 @@ class MyForm(QtGui.QWidget):
         self.protohandler=caffe_pb2.NetParameter()
         text_format.Merge(str(self.textEdit.toPlainText()),self.protohandler)
 	self.treeWidget.setFont(QtGui.QFont('Ubuntu Condensed',12))
+	#Jaley 27 Mar 2015 Starts
+	#Easy Layer Config
+	self.layerDict={} #FORMAT : {layername:{"dim":[batchsize,depth,width,hieght],"top":[t1,t2],"bottom":[b1,b2],"text","text of layer"}, ...}
+	#Jaley 25 MaR 2015 Ends
+	self.layerItemList=[]
         #First Layer Start
 	idx=0;
 	if(self.trainMode==False):
@@ -291,8 +307,10 @@ class MyForm(QtGui.QWidget):
             layername.setText(4,str(self.protohandler.input_dim[2]))
             layername.setText(5,str(self.protohandler.input_dim[3]))
 	    layername.setFlags(QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEditable)
+	    self.layerDict["data"]={"dim":self.protohandler.input_dim,"top":["data"],"bottom":[]}
 
             l.append(layername)
+	    self.layerItemList=l
         else:
 	    layername=QtGui.QTreeWidgetItem()
 	    layername.setText(0,'Data')
@@ -301,11 +319,12 @@ class MyForm(QtGui.QWidget):
             layername.setText(4,str(self.dim[2]))
             layername.setText(5,str(self.dim[3]))
 	    layername.setFlags(QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEditable)
+	    self.layerDict["data"]={"dim":self.dim,"top":["data"],"bottom":[]}
             l.append(layername)
+	    self.layerItemList=l
      
 	idx=1
         #First Layer Ends
-	
         #text_format.Merge(str(self.textEdit.toPlainText()),self.protohandler)
         for layer in self.protohandler.layer:
             if self.layerlist!=None:
@@ -313,6 +332,7 @@ class MyForm(QtGui.QWidget):
             layername=QtGui.QTreeWidgetItem()
             layername.setFlags(QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
 
+	    self.layerDict[layer.name]={"dim":[10,100,227,227],"top":[],"bottom":[]} #Jaley 27 Mar 2015
             layername.setText(0,str(idx)+'\t'+layer.name)
             idx=idx+1;
             #Adding Static Params
@@ -320,6 +340,7 @@ class MyForm(QtGui.QWidget):
             top.setText(0,'top')
             toplist=[];
             for name in layer.top:
+		self.layerDict[layer.name]["top"].append(name) #Jaley 27 Mar 2015
                 topelem=QtGui.QTreeWidgetItem()
                 topelem.setFlags(topelem.flags()& ~QtCore.Qt.ItemIsEnabled )
                 topelem.setText(0,name)
@@ -333,24 +354,39 @@ class MyForm(QtGui.QWidget):
             bottom.setText(0,'bottom')
             bottomlist=[];
             for name in layer.bottom:
+		self.layerDict[layer.name]["bottom"].append(name) #Jaley 27 Mar 2015
                 bottomelem=QtGui.QTreeWidgetItem()
                 bottomelem.setFlags(bottomelem.flags()& ~QtCore.Qt.ItemIsEnabled )
                 bottomelem.setText(0,name)
                 bottomlist.append(bottomelem)
             bottom.addChildren(bottomlist)
             bottom.setFlags(layername.flags()& ~QtCore.Qt.ItemIsEnabled )
-
             layername.addChild(bottom)
 
             layername.setForeground(1,QtGui.QBrush(QtCore.Qt.white))
             layername.setBackground(1,QtGui.QBrush(QtGui.QColor(45,60,45))) #Text is Red
-
-            layername.addChildren
+	    #Main Part Starts #######################
             #Adding Dynamic Params
+            [outputDim,bgarray]=self.addLayer(layer.name,layer.type,str(layer),layer.bottom)
+            layername.setBackground(0,QtGui.QBrush(QtGui.QColor(bgarray[0],bgarray[1],bgarray[2])))
+            layername.setBackground(1,QtGui.QBrush(QtGui.QColor(int(bgarray[0]*0.6),int(bgarray[1]*0.6),int(bgarray[2]*0.6))))
+            layername.setBackground(2,QtGui.QBrush(QtGui.QColor(bgarray[0],bgarray[1],bgarray[2])))
+            layername.setBackground(3,QtGui.QBrush(QtGui.QColor(bgarray[0],bgarray[1],bgarray[2])))
+            layername.setBackground(4,QtGui.QBrush(QtGui.QColor(bgarray[0],bgarray[1],bgarray[2])))
+            layername.setBackground(5,QtGui.QBrush(QtGui.QColor(bgarray[0],bgarray[1],bgarray[2])))
+	    
+	    layername.setText(1,layer.type)
+	    layername.setText(2,str(outputDim[0]))
+	    layername.setText(3,str(outputDim[1]))
+	    layername.setText(4,str(outputDim[2]))
+	    layername.setText(5,str(outputDim[3]))
+	    #Main Part Ends #########################
+	    """
             if(layer.type=="Convolution"):        #CONV
                 layername.setText(1,'CONV')
                 layername.setBackground(0,QtGui.QBrush(QtGui.QColor(180,180,150)))
                 layername.setBackground(1,QtGui.QBrush(QtGui.QColor(135,135,120)))
+		layername.setStyleSheet("color:rgb(0,0,0)");
 		for i in range(4):layername.setBackground(2+i,QtGui.QBrush(QtGui.QColor(180,180,150)))
 
                 self.paramiter(layer.convolution_param,layername,l)
@@ -398,11 +434,11 @@ class MyForm(QtGui.QWidget):
             else:
                 layername.setText(1,'OTHER')
                 self.getDim(l,layername)
-
+	    """
             l.append(layername)
-
+	    self.layerItemList=l
+	#print self.layerDict["data"]
         #### OLD VERSION STARTS
-
         #text_format.Merge(str(self.textEdit.toPlainText()),self.protohandler)
         for layer in self.protohandler.layers:
             if self.layerlist!=None:
@@ -443,6 +479,7 @@ class MyForm(QtGui.QWidget):
             layername.setBackground(1,QtGui.QBrush(QtGui.QColor(45,60,45))) #Text is Red
 
             layername.addChildren
+	   
             #Adding Dynamic Params
             if(layer.type==4):        #CONV
                 layername.setText(1,'CONV')
@@ -497,13 +534,66 @@ class MyForm(QtGui.QWidget):
                 self.getDim(l,layername)
 
             l.append(layername)
-
-
+	    self.layerItemList=l
+	#print self.layerDict
 
 
 	#### OLD VERSION ENDS
 
         self.treeWidget.addTopLevelItems(l)
+    #Jaley 27 Mar 2015 Start
+    #Easy Layer Config
+    def addLayer(self,layername,layertype,layertext,bottomList):
+	#Adds the layer to both 1. Dictionary, 2. QTreeWidget
+	bottomDict={}
+	#List of elements it is operating on
+	bgarray=[255,255,255];
+	layerdim=[0,0,0,0]
+	for elem in bottomList:
+	    #if(len(bottomList)>1):print '---------------------------------'
+	    #if(len(bottomList)>1):print 'BOTTOM ELEM NAME : ',elem
+	    #if(len(bottomList)>1):print 'BOTTOM ELEM DIM  : ',self.layerDict[elem]["dim"]
+	    if elem in self.layerDict.keys():
+	    	bottomDict[elem]=self.layerDict[elem]
+	    else:
+		bottomDict[elem]={"dim":layerdim,"top":[],"bottom":[]}
+	    replaceDim=self.getDimByLayerName(elem)
+	    if(replaceDim!=None):bottomDict[elem]["dim"]=replaceDim
+
+	    #if(layertype=="Pooling"):print self.layerDict[elem]
+
+	if(layertype in self.funcDict.keys()):
+	    layerdim=self.funcDict[layertype](bottomDict,layertext)
+	    self.layerDict[layername]["dim"]=[layerdim[0],layerdim[1],layerdim[2],layerdim[3]]
+	    for elem in self.layerCalcHandler.layer_calc:
+		if(elem.name==layertype and elem.HasField('background')):
+		    bgarray=[elem.background.r,elem.background.g,elem.background.b]
+
+	    #for elem in topDict.keys():
+	    #	self.layerDict[elem]=topDict[elem]
+	    	
+	else:
+	    if(len(bottomList)>=1):
+		layerdim=self.layerDict[bottomList[0]]['dim'];
+		self.layerDict[layername]['dim']=layerdim
+	    else:
+		layerdim=[100,10,227,227]
+	    #self.layerDict[elem]={"dim":bottomDict[bottomList[0]]["dim"],"top":[layername],"bottom":[bottomList[0]]}
+        
+	if layername=="pool2/3x3_s2":print '%%%%%%%%%%%%',layerdim
+	return [layerdim,bgarray];
+
+    def getDimByLayerName(self,layername):
+	for elem in self.layerItemList:
+	    compname=str(elem.text(0))
+	    if(compname.endswith(layername)):
+		return [int(elem.text(2)),int(elem.text(3)),int(elem.text(4)),int(elem.text(5))]
+	return None
+
+
+    #Jaley 27 Mar 2015 End
+
+    
 
     def paramiter(self,handle,layername,l):
 
