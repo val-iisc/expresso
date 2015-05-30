@@ -47,6 +47,8 @@ class AugmentationHandler:
     def operate(self,lineList,fileName,argArray,dim):
 	#Doing Dry Run for Lines
 	idx=0;
+	self.startCountList=[]
+	self.endCountList=[]
 	for line in lineList:
 	    startArray=[]
 	    endArray=[]
