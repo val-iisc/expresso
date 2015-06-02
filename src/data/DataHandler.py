@@ -51,9 +51,12 @@ def folder2HDF5(name,sourceloc,destfolderloc,hasLabel=False,dimx=227,dimy=227,di
         if(len(d.strip())>1 and len(d.split("."))>0 and  d.split(".")[-1] in ['jpg','png','gif','bmp','tiff','jpeg']):
 
             print d
-            x=scipy.misc.imresize(np.array(Image.open(str(sourceloc)+'/'+d.strip().split()[0]),dtype='float32'),[dimx,dimy]).transpose([2,0,1])
-	
-            dset[idx]=x.reshape(1,dimz,dimx,dimy)
+	    x=scipy.misc.imresize(np.array(Image.open(str(sourceloc)+'/'+d.strip().split()[0]),dtype='float32'),[dimx,dimy])
+            if(len(x.shape)==3):
+		x=x.transpose([2,0,1])
+		dset[idx]=x.reshape(1,dimz,dimx,dimy)
+	    else:
+		dset[idx]=x.reshape(1,1,dimx,dimy)
 
     f.close();
     pass
