@@ -26,6 +26,7 @@ netName=str(sys.argv[2])
 batchSize=int(sys.argv[3])
 layerName=sys.argv[4]
 dataName=sys.argv[5]
+includeDataFlag=int(sys.argv[6])
 netIdx=None
 
 
@@ -103,6 +104,9 @@ def operate(expName,layerName,net,currentNet,batchSize,dataName):
     # Load Data
     name=root+'/data/'+dataName +'.hdf5'
     with h5py.File(name,'r') as f:
+	#1st June Starts
+	if(includeDataFlag!=0 and ('input_data' not in expHandle.keys())):expHandle.create_dataset('input_data',data=f['data'],**comp_kwargs)
+	#1st June Ends
         if ('label' in f.keys()) and ('label' not in expHandle.keys()):expHandle.create_dataset('label',data=f['label'],**comp_kwargs)
 	out=[]
         if currentNet.channel_swap==True:data=np.array(f['data'])[:,[2,1,0],:,:]

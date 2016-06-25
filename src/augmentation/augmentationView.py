@@ -124,7 +124,6 @@ class Ui_Form(QtGui.QWidget):
 	if(self.fileName==None or self.fileName==''):
 	    self.close()
 	    return
-
 	#Operate on set of lines
 	self.augmentationHandler.operate(self.lineList,self.fileName,self.argList,self.dim)
 	self.signalRefreshTrigger.emit(self.fileName+' is imported')
@@ -179,7 +178,8 @@ class Ui_Form(QtGui.QWidget):
 	self.fileName=fileName
 	self.dim=dim
 	self.staticArg=staticArg
-		
+	self.argList=[]
+	self.listWidget_2.clear()	
     def setArguments(self,name=None):
 	if(name==None or name==''):return
 

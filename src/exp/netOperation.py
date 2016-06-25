@@ -156,6 +156,7 @@ class SoftMaxAccuracy:
 	totalLen=actualLabels.shape[0]
 	print totalLen
 	print predictedLabels
+	open('/tmp/default.txt').write("\n".join(predictedLabels.toList()))
 	nonZero=np.absolute(actualLabels-predictedLabels)
 	count=0;
 	for elem in nonZero:

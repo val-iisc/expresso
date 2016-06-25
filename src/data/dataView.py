@@ -100,12 +100,36 @@ class Ui_Form(QtGui.QWidget):
         self.spinBox.setStyleSheet(_fromUtf8("background-color:rgb(255,255,255)"))
         self.spinBox.setObjectName(_fromUtf8("spinBox"))
 	#View
+	
 	self.view = self.widget.addViewBox()
 	self.view.setAspectLocked(True)
 	self.img = pg.ImageItem(border='w')
 	self.view.addItem(self.img)
 	self.data = np.random.randint(255, size=(100, 100, 3))
 	self.img.setImage(self.data)
+	"""
+	#Add Second ViewBox
+
+	self.view2=self.widget.addViewBox()
+	
+	#Add Second ViewBox Ends
+
+	#ROI Stuff
+	self.r3b = pg.ROI([0,0], [5,5])
+	self.view2.addItem(self.r3b)
+	## handles rotating around center	
+	self.r3b.addRotateHandle([1, 1], [0.5, 0.5])
+	self.r3b.addRotateHandle([0, 0], [0.5, 0.5])
+	self.r3b.addScaleRotateHandle([0, 0.5], [0.5, 0.5])
+	self.r3b.addScaleRotateHandle([1, 0.5], [0.5, 0.5])
+	self.r3b.addScaleRotateHandle([0.5, 0], [0.5, 0.5])
+	self.r3b.addScaleRotateHandle([0.5, 1], [0.5, 0.5])
+
+	self.view2.disableAutoRange('xy')
+	self.view2.autoRange()
+
+	#ROI Stuff Ends
+	"""
 	#Triggers
 	self.tableWidgetData.itemChanged.connect(self.tableWidgetDataChanged)	
 	self.tableWidgetData.itemSelectionChanged.connect(self.changeContent)

@@ -24,6 +24,7 @@ sys.path.append(root+'/src/exp')
 import configNetListView
 import expListView
 import pipelineView
+import denseCRFList
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -60,9 +61,12 @@ class Ui_Form(QtGui.QWidget):
     def addPages(self):
         self.addPage0()
         self.addPage1()
+        self.addPage2()
 	#self.addPage1copy()
         self.addPage3()
-        self.addPage0()
+        self.addPage4()
+        self.addPage5()
+        self.addPage6()
         self.currentIndex=0
 
     def addPage0(self):
@@ -70,9 +74,6 @@ class Ui_Form(QtGui.QWidget):
         self.containerWidget.setStyleSheet('background-color:rgb(150,150,90);')
         self.stackedWidget.addWidget(self.containerWidget)
 
-
-    def addPage1copy(self):
-        self.stackedWidget.addWidget(self.page1Container)
 	
     def addPage1(self):
         self.page1Container=QtGui.QWidget(self)
@@ -84,16 +85,47 @@ class Ui_Form(QtGui.QWidget):
         self.stackedWidget.addWidget(self.page1Container)
 
     def addPage2(self):
-        self.containerWidget=QtGui.QScrollArea(self)
-        self.stackedWidget.addWidget(self.containerWidget)
+        self.page2Container=QtGui.QWidget(self)
+        self.page2Container.setGeometry(0,0,291,301)
+        self.page2Container.setStyleSheet('background-color:rgb(150,150,90);')
+        self.page2Widget=pipelineView.Ui_Form(self.page2Container) ### Uncomment It Later
+        self.page2Widget.setGeometry(0,0,291,301)
+        self.stackedWidget.addWidget(self.page2Container)
+
 
     def addPage3(self):
         self.page3Container=QtGui.QWidget(self)
         self.page3Container.setGeometry(0,0,291,301)
         self.page3Container.setStyleSheet('background-color:rgb(150,150,90);')
-        self.page3Widget=pipelineView.Ui_Form(self.page3Container) ### Uncomment It Later
+        self.page3Widget=QtGui.QWidget(self.page3Container) ### Uncomment It Later
         self.page3Widget.setGeometry(0,0,291,301)
         self.stackedWidget.addWidget(self.page3Container)
+
+
+
+
+    def addPage4(self):
+        self.page4Container=QtGui.QWidget(self)
+        self.page4Container.setGeometry(0,0,291,301)
+        self.page4Container.setStyleSheet('background-color:rgb(150,150,90);')
+        self.stackedWidget.addWidget(self.page4Container)
+
+    def addPage5(self):
+        self.page5Container=QtGui.QWidget(self)
+        self.page5Container.setGeometry(0,0,291,301)
+        self.page5Container.setStyleSheet('background-color:rgb(150,150,90);')
+        self.stackedWidget.addWidget(self.page5Container)
+
+
+    def addPage6(self):
+        self.page6Container=QtGui.QWidget(self)
+        self.page6Container.setGeometry(0,0,291,301)
+        self.page6Container.setStyleSheet('background-color:rgb(150,150,90);')
+        self.page6Widget=denseCRFList.Ui_Form(self.page6Container) ### Uncomment It Later
+        self.page6Widget.setGeometry(0,0,291,301)
+        self.stackedWidget.addWidget(self.page6Container)
+
+
 
     def pushButtonNextSlot(self):
         if self.currentIndex==3:return
@@ -112,10 +144,25 @@ class Ui_Form(QtGui.QWidget):
 	self.stackedWidget.setCurrentIndex(self.currentIndex)
     def switchToPage2(self):
 	self.currentIndex=2
+	print 'Switched to Page2'
 	self.stackedWidget.setCurrentIndex(self.currentIndex)
 
     def switchToPage3(self):
 	self.currentIndex=3
+	self.stackedWidget.setCurrentIndex(self.currentIndex)
+
+    def switchToPage4(self):
+	self.currentIndex=4
+	self.stackedWidget.setCurrentIndex(self.currentIndex)
+
+
+    def switchToPage5(self):
+	self.currentIndex=4
+	self.stackedWidget.setCurrentIndex(self.currentIndex)
+
+
+    def switchToPage6(self):
+	self.currentIndex=6
 	self.stackedWidget.setCurrentIndex(self.currentIndex)
 
 

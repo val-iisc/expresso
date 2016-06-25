@@ -26,6 +26,8 @@ import expVisuallizeView
 import expTesting
 sys.path.append(root+'/src/exp/SVM')
 import testSVMView
+import denseCRFView
+import denseCRFCalc
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -69,6 +71,7 @@ class Ui_Form(QtGui.QWidget):
 	self.addPage3()
 	self.addPage4()
 	self.addPage5()
+	self.addPage6()
 	self.currentIndex=0
 
     def addPage0(self):
@@ -157,7 +160,8 @@ class Ui_Form(QtGui.QWidget):
 	self.page4Container=QtGui.QWidget(self)
         self.page4Container.setGeometry(0,0,611,591)
 	self.page4Container.setStyleSheet("background-color:rgb(0,0,0);")
-	self.page4Widget=QtGui.QWidget(self.page4Container)
+	#self.page4Widget=QtGui.QWidget(self.page4Container)
+	self.page4Widget=denseCRFView.Ui_Form(self.page4Container)
 	self.page4Widget.setGeometry(0,0,691,591)
 	self.stackedWidget.addWidget(self.page4Container)
 
@@ -169,6 +173,14 @@ class Ui_Form(QtGui.QWidget):
 	self.page5Widget=testSVMView.Ui_Form(self.page5Container)
 	self.page5Widget.setGeometry(0,0,691,591)
 	self.stackedWidget.addWidget(self.page5Container)
+
+    def addPage6(self):
+	self.page6Container=QtGui.QWidget(self)
+        self.page6Container.setGeometry(0,0,611,591)
+	self.page6Container.setStyleSheet("background-color:rgb(150,150,90);")
+	self.page6Widget=denseCRFCalc.Ui_Form(self.page6Container)
+	self.page6Widget.setGeometry(0,0,691,591)
+	self.stackedWidget.addWidget(self.page6Container)
 
 
 
@@ -202,6 +214,10 @@ class Ui_Form(QtGui.QWidget):
 
     def switchToPage5(self):
 	self.currentIndex=5
+	self.stackedWidget.setCurrentIndex(self.currentIndex)
+
+    def switchToPage6(self):
+	self.currentIndex=6
 	self.stackedWidget.setCurrentIndex(self.currentIndex)
 
  

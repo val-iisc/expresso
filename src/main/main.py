@@ -369,9 +369,12 @@ class Ui_MainWindow(QtGui.QMainWindow):
 	self.stackedLeft2.setCurrentIndex(3)
 	self.stackedBottom.setCurrentIndex(3)
 	self.pageCentralExp.pushButtonBackSlot()
+	self.pageLeft2Exp.pushButtonBackSlot()
 	self.p.setColor(MainWindow.backgroundRole(), QtGui.QColor(150,150,90))
         MainWindow.setPalette(self.p)
 	self.onOtherThanMainView()
+	self.pageBottomExp.pushButtonBackSlot()
+	self.pageBottomExp.pushButtonViewResults.hide()
 
     def onPushButtonDataClicked(self):
 	self.currentView=1
@@ -462,7 +465,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
     def testing(self,index=0):
 	print 'hello',index
     def addExpTriggers(self):
-	self.pageLeft2Exp.page3Widget.signalUpdateTriggered.connect(self.pageCentralExp.page2Widget.applyFuncList)
+	self.pageLeft2Exp.page2Widget.signalUpdateTriggered.connect(self.pageCentralExp.page2Widget.applyFuncList)
 	### Flow 2 : Experiments Button Triggers ###
 	#self.pageLeft1Exp.pushButtonNext.clicked.connect(self.pageCentralExp.pushButtonNextSlot)
 	self.pageBottomExp.pushButtonBack.clicked.connect(self.pageCentralExp.pushButtonBackSlot)
@@ -470,6 +473,21 @@ class Ui_MainWindow(QtGui.QMainWindow):
 	#self.pageLeft1Exp.pushButtonNext.clicked.connect(self.pageLeft2Exp.pushButtonNextSlot)
 	self.pageBottomExp.pushButtonBack.clicked.connect(self.pageLeft2Exp.pushButtonBackSlot)
 	self.pageBottomExp.pushButtonBack.clicked.connect(self.pageBottomExp.pushButtonBack.hide)
+	self.pageCentralExp.page0Widget.pushButton_4.clicked.connect(self.pageBottomExp.pushButtonViewResults.show)
+	self.pageBottomExp.pushButtonBack.clicked.connect(self.pageBottomExp.pushButtonViewResults.hide)
+	self.pageBottomExp.pushButtonViewResults.clicked.connect(self.pageCentralExp.switchToPage6)
+	self.pageBottomExp.pushButtonViewResults.clicked.connect(self.pageLeft2Exp.switchToPage6)
+
+	#RefreshDisplay of Dense CRF Results Start
+	self.pageLeft2Exp.page6Widget.signalCompleteTrigger.connect(self.pageCentralExp.page6Widget.refreshTrigger)
+	self.pageCentralExp.page6Widget.pushButtonRefresh.clicked.connect(self.pageLeft2Exp.page6Widget.refreshTrigger)
+	#self.pageBottomExp.pushButtonViewResults.clicked.connect(self.pageCentralExp.page6Widget.refresh)
+
+	#RefreshDisplay of Dense CRF Results Ends
+	
+
+
+
 
 	#Bottom Triggers
 	#self.pageLeft1Exp.pushButtonNext.clicked.connect(self.pageBottomExp.pushButtonNextSlot)
@@ -515,6 +533,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
 	self.pageCentralExp.page1Widget.refreshTrigger()
 	self.pageCentralExp.page2Widget.refreshTrigger()
 	self.pageCentralExp.page3Widget.refreshTrigger()
+	self.pageCentralExp.page4Widget.refreshTrigger()#Dense CRF Refresh
 	self.pageCentralExp.page5Widget.refreshTrigger()
 	self.pageLeft2Exp.page1Widget.refreshTrigger()
 	self.pageCentralTrain.pageSVMWidget.refreshTrigger()

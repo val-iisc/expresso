@@ -174,6 +174,14 @@ class Ui_Form(QtGui.QWidget):
         self.label_6.setFont(font)
         self.label_6.setStyleSheet(_fromUtf8("font: 18pt \"Ubuntu Condensed\";color:rgb(230,240,210);"))
         self.label_6.setObjectName(_fromUtf8("label_6"))
+	#Jaley June 1,2015
+	self.checkBoxInputData=QtGui.QCheckBox(Form)
+	self.checkBoxInputData.setGeometry(330,410,200,30)
+	self.checkBoxInputData.setText('Attach Input Data')
+        self.checkBoxInputData.setStyleSheet(_fromUtf8("font: 14pt \"Ubuntu Condensed\";color:rgb(230,240,210);"))
+	
+	#End Jaley June 1,2015
+
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -264,7 +272,7 @@ class Ui_Form(QtGui.QWidget):
 	if(os.path.exists(logName)):os.remove(logName)
 	with open(scriptName,'w') as f:
 	    for elem in tickedList:
-		f.write('python '+root+'/src/exp/extractFeatures.py '+saveName+' '+netName+' '+str(batchSize)+' '+elem+' '+dataName+'\n')
+		f.write('python '+root+'/src/exp/extractFeatures.py '+saveName+' '+netName+' '+str(batchSize)+' '+elem+' '+dataName+' '+str(self.checkBoxInputData.checkState())+'\n')
 
 	#Writing the Shell Script Ends
 	inthread(self.runParallel,scriptName,triggerList)

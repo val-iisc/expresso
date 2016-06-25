@@ -7,6 +7,7 @@ import scipy.io as sio
 import readdb
 import os
 import shutil
+import subprocess
 #import leveldB
 root=os.getenv('EXPRESSO_ROOT')
 
@@ -45,15 +46,25 @@ def text2HDF5(name,sourceloc,destfolderloc,hasLabel=False,dimx=227,dimy=227,dimz
 def folder2HDF5(name,sourceloc,destfolderloc,hasLabel=False,dimx=227,dimy=227,dimz=3):
     f=h5py.File(destfolderloc+'/'+name+'.hdf5','w')
     strary=os.listdir(sourceloc)
+    #Sort it by name
+    proc=subprocess.Popen('ls '+sourceloc,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    out,err=proc.communicate()
+    strary=out.split('\n')
+    strary.remove('')
+
+    #End Sort    
     size=len(strary);
     dset=f.create_dataset("data",(size,dimz,dimx,dimy),compression="gzip")
     for  idx,d in enumerate(strary):
         if(len(d.strip())>1 and len(d.split("."))>0 and  d.split(".")[-1] in ['jpg','png','gif','bmp','tiff','jpeg']):
 
             print d
-            x=scipy.misc.imresize(np.array(Image.open(str(sourceloc)+'/'+d.strip().split()[0]),dtype='float32'),[dimx,dimy]).transpose([2,0,1])
-	
-            dset[idx]=x.reshape(1,dimz,dimx,dimy)
+	    x=scipy.misc.imresize(np.array(Image.open(str(sourceloc)+'/'+d.strip().split()[0]),dtype='float32'),[dimx,dimy])
+            if(len(x.shape)==3):
+		x=x.transpose([2,0,1])
+		dset[idx]=x.reshape(1,dimz,dimx,dimy)
+	    else:
+		dset[idx]=x.reshape(1,1,dimx,dimy)
 
     f.close();
     pass

@@ -30,6 +30,7 @@ import time
 import importMultipleFoldersView
 sys.path.append(root+'/src/augmentation')
 import augmentationView
+import subprocess
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
@@ -181,9 +182,23 @@ class Ui_Form(QtGui.QWidget):
 			allLines=f.readlines()
 			self.lineList=allLines[1:]
 			staticArg=allLines[0]
+			self.addAugmentationWidget.augmentationHandler.hasLabel=True;
 			self.addAugmentationWidget.setParams(lineList=self.lineList,fileName=self.lineEditData.text().__str__(),dim=(self.dimz,self.dimx,self.dimy),staticArg=staticArg)
 				
-		
+		if(self.comboBox.currentText()=="Folder"):
+		    staticArg=self.lineEditFolderData.text().__str__()
+		    if(staticArg==""):return
+		    proc=subprocess.Popen('ls '+staticArg,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    		    out,err=proc.communicate()
+		    strary=out.split('\n')
+		    strary.remove('')
+		    self.lineList=strary
+		    self.addAugmentationWidget.augmentationHandler.hasLabel=False;
+		    self.addAugmentationWidget.setParams(lineList=self.lineList,fileName=self.lineEditData.text().__str__(),dim=(self.dimz,self.dimx,self.dimy),staticArg=staticArg)
+			
+
+ 
+
 		#Create LineList Ends
 		self.addAugmentationWidget.show()
 

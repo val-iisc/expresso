@@ -53,6 +53,12 @@ class Ui_Form(QtGui.QWidget):
         self.pushButtonBack.setText('Back')
 	self.pushButtonBack.hide()
 
+	self.pushButtonViewResults=QtGui.QPushButton(Form)
+        self.pushButtonViewResults.setGeometry(360,0,120,30)
+        self.pushButtonViewResults.setStyleSheet('background-color:rgba(255,255,255,175);font:15pt \"Ubuntu Condensed\";') 
+        self.pushButtonViewResults.setText('ViewResults')
+	self.pushButtonViewResults.hide()
+
 	
 	self.addPages()
         self.retranslateUi(Form)
@@ -66,6 +72,9 @@ class Ui_Form(QtGui.QWidget):
         self.addPage1()
         self.addPage2()
         self.addPage3()
+	self.addPage4()
+	self.addPage5()
+	self.addPage6()
 	self.currentIndex=0
 
     def addPage0(self):
@@ -92,8 +101,26 @@ class Ui_Form(QtGui.QWidget):
         self.stackedWidget.addWidget(self.page2Container)
 
     def addPage3(self):
-	self.containerWidget=QtGui.QScrollArea(self)
-	self.stackedWidget.addWidget(self.containerWidget)
+	self.page3Container=QtGui.QScrollArea(self)
+	self.stackedWidget.addWidget(self.page3Container)
+
+    def addPage4(self):
+	self.page4Container=QtGui.QScrollArea(self)
+	self.stackedWidget.addWidget(self.page4Container)
+
+    def addPage5(self):
+	self.page5Container=QtGui.QScrollArea(self)
+	self.stackedWidget.addWidget(self.page5Container)
+
+    def addPage6(self):
+	self.page6Container=QtGui.QScrollArea(self)
+	self.stackedWidget.addWidget(self.page6Container)
+
+
+    def switchToPage4(self):
+	self.currentIndex=4
+	self.stackedWidget.setCurrentIndex(self.currentIndex)
+	self.pushButtonViewResults.show()
 
 
     def pushButtonNextSlot(self):
@@ -103,9 +130,10 @@ class Ui_Form(QtGui.QWidget):
         self.stackedWidget.setCurrentIndex(self.currentIndex)
 
     def pushButtonBackSlot(self):
-        if(self.currentIndex==0):return
         self.currentIndex=0;
-        #self.stackedWidget.setCurrentIndex(self.currentIndex)  
+	self.pushButtonViewResults.hide()
+	self.pushButtonBack.hide()
+        self.stackedWidget.setCurrentIndex(self.currentIndex)  
         pass
 
     """

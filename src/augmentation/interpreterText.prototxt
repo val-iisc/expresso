@@ -9,3 +9,20 @@ interpreter{
 	name:"central cropping"
 	funcDirectName:"croppingWithoutStretchingFunc"
 }
+
+interpreter{
+	type:DIRECT
+	name:"variable croping"
+	funcDirectName:"variableCropFunc"
+}
+
+interpreter{
+	type:DIRECT
+	name:"multilabel"
+	funcDirectName:"multiLabelFunc"
+}
+interpreter{
+	type:DIRECT
+	name:"customImport"
+	funcDirectName:"customImportFunc"
+}

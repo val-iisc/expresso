@@ -86,7 +86,7 @@ class Ui_Form(QtGui.QWidget):
         self.label_4.setGeometry(QtCore.QRect(10, 170, 151, 71))
         self.label_4.setStyleSheet(_fromUtf8("font: 15pt \"Ubuntu Condensed\";color:rgb(45,60,45)"))
         self.label_4.setObjectName(_fromUtf8("label_3"))
-	self.widget_4.hide() #TO BE SHOWN LATER ON!!!
+	#self.widget_4.hide() #TO BE SHOWN LATER ON!!!
 
         self.widget_5 = QtGui.QWidget(Form)
         self.widget_5.setGeometry(QtCore.QRect(50, 270, 171, 241))

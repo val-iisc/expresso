@@ -24,7 +24,7 @@ class AugmentationHandler:
 	text_format.Merge(open(root+'/src/augmentation/interpreterText.prototxt','r').read(),self.interpreterHandler)
 	self.directInterpreter()
 	#self.operateDict['central crop']=croppingWithoutStretchingFunc.operate
-
+	self.hasLabel=True;
 
 	#self.arg2Dict['central crop']=croppingWithoutStretchingFunc.arg2Name()
 
@@ -47,6 +47,10 @@ class AugmentationHandler:
     def operate(self,lineList,fileName,argArray,dim):
 	#Doing Dry Run for Lines
 	idx=0;
+	hasLabel=self.hasLabel
+	hasLabel=False
+	self.startCountList=[]
+	self.endCountList=[]
 	for line in lineList:
 	    startArray=[]
 	    endArray=[]
@@ -54,16 +58,16 @@ class AugmentationHandler:
 		#Append lines for a line for a function in pipeline
 		startArray.append(idx);
 		idx=idx+self.lineDict[elem[0]](line,dim,elem[3],elem[1],elem[2])
-		print idx
 		endArray.append(idx)
 	    self.startCountList.append(startArray)
 	    self.endCountList.append(endArray)
+
 	self.totalLines=idx
 	print self.totalLines,'TOTAL LINES'
 	#Creating HDF5 File
 	with h5py.File(root+'/data/'+fileName+'.hdf5','w') as f:
 	    data=f.create_dataset('data',(self.totalLines,dim[0],dim[1],dim[2]),'f');
-	    label=f.create_dataset('label',(self.totalLines,1),'f');
+	    if(hasLabel==True):label=f.create_dataset('label',(self.totalLines,1),'f');
 	    #Run Operation
 	    for idx,line in enumerate(lineList):
 		startArray=self.startCountList[idx]
@@ -71,7 +75,8 @@ class AugmentationHandler:
 		for idx2,elem in enumerate(argArray):
 		    len2=self.lineDict[elem[0]](line,dim,elem[3],elem[1],elem[2])
 		    data[startArray[idx2]:endArray[idx2],:]=self.operateDict[elem[0]](line,fileName,startArray[idx2],dim,elem[3],elem[1],elem[2])
-		    label[startArray[idx2]:endArray[idx2],:]=self.labelDict[elem[0]](line,fileName,startArray[idx2],dim,elem[3],elem[1],elem[2])
+		    if(hasLabel==True):label[startArray[idx2]:endArray[idx2],:]=self.labelDict[elem[0]](line,fileName,startArray[idx2],dim,elem[3],elem[1],elem[2])
+
 
 
     def getKeys(self):

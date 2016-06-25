@@ -10,3 +10,8 @@ func{
 	name:"invert"
 	funcName:"invertFunc"
 }
+
+func{
+	name:"parabola"
+	funcName:"rParabolaFunc"
+}
